@@ -81,19 +81,10 @@ export function Header({
             >
               <ArrowLeft color={C.ink} size={21} />
             </Pressable>
-          ) : search ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Search products"
-              style={ui.iconButton}
-              onPress={() => router.push("/search")}
-            >
-              <Search color={C.ink} size={21} />
-            </Pressable>
           ) : null}
         </View>
         {title ? (
-          <Text style={{ fontSize: 16, color: C.ink }}>{title}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 16, color: C.ink, flexShrink: 1, textAlign: "center" }}>{title}</Text>
         ) : (
           <Pressable
             accessibilityRole="button"
@@ -117,6 +108,19 @@ export function Header({
           )}
         </Pressable>
       </View>
+      {search && !back && (
+        <View style={s.searchWrap}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Search products"
+            onPress={() => router.push("/search")}
+            style={({ pressed }) => [s.searchBar, pressed && { opacity: 0.7 }]}
+          >
+            <Search size={18} color={C.muted} strokeWidth={1.5} />
+            <Text style={s.searchText}>Search your everyday essentials</Text>
+          </Pressable>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -186,6 +190,9 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#f0f2eb",
   },
+  searchWrap: { paddingHorizontal: 20, paddingBottom: 14, paddingTop: 10 },
+  searchBar: { minHeight: 46, backgroundColor: C.cream, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: C.line },
+  searchText: { fontSize: 12, color: C.muted, flexShrink: 1 },
   count: {
     position: "absolute",
     top: 2,

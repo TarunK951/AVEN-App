@@ -16,3 +16,10 @@ Verified 2026-11-15.
 This is a frontend shopping prototype. No live payment, order, email, inventory or account service is connected. Address/contact details are not persisted. Product photography is reference material and must be licensed or replaced before commercial publication.
 
 No APK was created. Native Android/iOS device behavior has not been verified. Android build experimentation was stopped at the user's request; native build settings are source configuration, not evidence of a successful native build. Browser checks use React Native Web and do not replace device QA.
+
+## Header search and You page refinement
+
+- Moved the search entry from the header icon into a dedicated search bar below the header on tab screens.
+- Reworked You with separate saved/bag cards, help rows, collection shortcut, and compact information links.
+- Browser checked at 320, 390 and 768 CSS pixels; no page-level horizontal overflow at 320 or 768 pixels. Search for fleece returned the expected hoodie. Shipping & returns opened the correct information page and back navigation returned to You.
+- TypeScript passed after these changes. Screenshots are in ignored output/.

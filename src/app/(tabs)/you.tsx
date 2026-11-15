@@ -1,111 +1,78 @@
 import { ScrollView, View, Text, Pressable, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { ArrowRight, Heart, PackageCheck, Leaf } from "lucide-react-native";
+import { ArrowUpRight, ChevronRight, Heart, ShoppingBag, Truck, Ruler, BookOpen, Info, ShieldCheck } from "lucide-react-native";
 import { Header, Mark } from "../../ui/components";
 import { C, ui } from "../../ui/theme";
 import { useStore } from "../../store/store";
+
+const links = [
+  { label: "Shipping & returns", detail: "From our doorstep to yours", slug: "shipping-returns", icon: Truck },
+  { label: "Find your fit", detail: "A little guidance, a better fit", slug: "size-guide", icon: Ruler },
+  { label: "Our story", detail: "Get to know AVEN", slug: "our-story", icon: BookOpen },
+];
 export default function You() {
   const { favorites, count } = useStore();
   return (
     <View testID="you-screen" style={ui.screen}>
       <Header />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={[ui.section, { paddingVertical: 40 }]}>
-          <Text style={ui.eyebrow}>YOUR OWN KIND OF EVERYDAY</Text>
-          <Text style={[ui.title, { marginTop: 15 }]}>
-            A little space for you.
-          </Text>
-          <Text style={[ui.body, { marginTop: 15 }]}>
-            The pieces you love. The moments that move you.
-          </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.content}>
+        <View style={s.intro}>
+          <Text style={ui.eyebrow}>YOUR EVERYDAY, TOGETHER</Text>
+          <Text style={s.title}>Make yourself{`\n`}at home.</Text>
+          <Text style={[ui.body, { marginTop: 12 }]}>Your favorites, little essentials,{`\n`}and a little help along the way.</Text>
         </View>
         <View style={s.stats}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open saved favorites"
-            style={s.stat}
-            onPress={() => router.navigate("/(tabs)/saved")}
-          >
-            <Heart size={22} color={C.ink} strokeWidth={1.3} />
-            <Text style={s.number}>{favorites.length}</Text>
-            <Text style={ui.small}>Favorites</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Open saved favorites" style={({pressed}) => [s.stat, pressed && s.pressed]} onPress={() => router.navigate("/(tabs)/saved")}>
+            <View style={ui.row}><Heart size={21} color={C.ink} strokeWidth={1.4} /><ArrowUpRight size={16} color={C.muted} /></View>
+            <Text style={s.number}>{String(favorites.length).padStart(2, "0")}</Text>
+            <Text style={s.statLabel}>Saved favorites</Text>
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open your bag"
-            style={s.stat}
-            onPress={() => router.navigate("/(tabs)/bag")}
-          >
-            <PackageCheck size={22} color={C.ink} strokeWidth={1.3} />
-            <Text style={s.number}>{count}</Text>
-            <Text style={ui.small}>In your bag</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Open your bag" style={({pressed}) => [s.stat, pressed && s.pressed]} onPress={() => router.navigate("/(tabs)/bag")}>
+            <View style={ui.row}><ShoppingBag size={21} color={C.ink} strokeWidth={1.4} /><ArrowUpRight size={16} color={C.muted} /></View>
+            <Text style={s.number}>{String(count).padStart(2, "0")}</Text>
+            <Text style={s.statLabel}>In your bag</Text>
           </Pressable>
         </View>
-        <View style={ui.section}>
-          {[
-            { label: "Our story", slug: "our-story" },
-            { label: "Shipping & returns", slug: "shipping-returns" },
-            { label: "Find your fit", slug: "size-guide" },
-            { label: "About this app", slug: "about" },
-            { label: "Privacy", slug: "privacy" },
-          ].map((x) => (
-            <Pressable
-              accessibilityRole="button"
-              key={x.slug}
-              onPress={() =>
-                router.push({
-                  pathname: "/info/[slug]",
-                  params: { slug: x.slug },
-                })
-              }
-              style={s.link}
-            >
-              <Text style={{ fontSize: 13, color: C.ink }}>{x.label}</Text>
-              <ArrowRight size={17} color={C.muted} />
+        <View style={s.help}>
+          <Text style={[ui.eyebrow, { marginBottom: 14 }]}>HERE TO HELP</Text>
+          {links.map(({label, detail, slug, icon: Icon}) => (
+            <Pressable accessibilityRole="button" accessibilityLabel={label} key={slug} onPress={() => router.push({pathname: "/info/[slug]", params: {slug}})} style={({pressed}) => [s.link, pressed && s.pressed]}>
+              <View style={s.linkIcon}><Icon size={20} color={C.ink} strokeWidth={1.3}/></View>
+              <View style={{flex: 1, gap: 5}}><Text style={s.linkLabel}>{label}</Text><Text style={ui.small}>{detail}</Text></View>
+              <ChevronRight size={17} color={C.muted}/>
             </Pressable>
           ))}
         </View>
-        <View style={s.note}>
-          <Mark size={29} />
-          <Text
-            style={[
-              ui.h2,
-              { fontSize: 22, textAlign: "center", marginTop: 18 },
-            ]}
-          >
-            Made for a life in motion.
-          </Text>
-          <Text style={[ui.small, { textAlign: "center", marginTop: 12 }]}>
-            AVEN 1.0 · Independent shopping preview{`\n`}Demo checkout. No real
-            charges or orders.
-          </Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Explore the everyday collection" onPress={() => router.navigate("/(tabs)/shop")} style={({pressed}) => [s.explore, pressed && {opacity: 0.9}]}>
+          <View style={{flex:1}}><Text style={s.exploreEyebrow}>A LITTLE INSPIRATION</Text><Text style={s.exploreTitle}>Find your next{`\n`}everyday favorite.</Text><View style={{flexDirection: "row", alignItems: "center", gap: 10, marginTop: 17}}><Text style={s.exploreLink}>Explore the collection</Text><ArrowUpRight size={16} color={C.white}/></View></View>
+          <Mark size={58} color="#a6b3a0"/>
+        </Pressable>
+        <View style={s.about}>
+          {[{label:"About AVEN",slug:"about",icon:Info},{label:"Privacy",slug:"privacy",icon:ShieldCheck}].map(({label,slug,icon:Icon}) => <Pressable accessibilityRole="button" key={slug} onPress={() => router.push({pathname:"/info/[slug]",params:{slug}})} style={s.aboutLink}><Icon size={15} color={C.muted} strokeWidth={1.4}/><Text style={ui.small}>{label}</Text></Pressable>)}
         </View>
+        <Text style={s.footnote}>AVEN 1.0 · Made for a life in motion.</Text>
       </ScrollView>
     </View>
   );
 }
 const s = StyleSheet.create({
-  stats: {
-    flexDirection: "row",
-    marginHorizontal: 22,
-    backgroundColor: C.cream,
-    padding: 25,
-  },
-  stat: { flex: 1, alignItems: "center", gap: 10 },
-  number: { fontSize: 25, color: C.ink },
-  link: {
-    paddingVertical: 21,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: C.line,
-  },
-  note: {
-    padding: 30,
-    alignItems: "center",
-    backgroundColor: C.cream,
-    marginTop: 15,
-    marginBottom: 25,
-  },
+  content: {width: "100%", maxWidth: 680, alignSelf: "center", paddingBottom: 24},
+  intro: {paddingHorizontal: 22, paddingTop: 27, paddingBottom: 25},
+  title: {fontSize: 36, lineHeight: 40, letterSpacing: -1.3, color: C.ink, marginTop: 14},
+  stats: {flexDirection: "row", gap: 12, marginHorizontal: 22},
+  stat: {flex: 1, backgroundColor: C.cream, borderWidth: 1, borderColor: C.line, padding: 17},
+  number: {fontSize: 31, lineHeight: 39, letterSpacing: -1, color: C.ink, marginTop: 20},
+  statLabel: {fontSize: 11, color: C.muted, marginTop: 3},
+  help: {paddingHorizontal: 22, paddingTop: 30},
+  link: {minHeight: 78, paddingVertical: 15, flexDirection: "row", alignItems: "center", gap: 13, borderBottomWidth: 1, borderColor: C.line},
+  linkIcon: {width: 35, alignItems: "flex-start"},
+  linkLabel: {fontSize: 13, color: C.ink},
+  pressed: {opacity: 0.6},
+  explore: {marginHorizontal: 22, marginTop: 28, backgroundColor: C.ink, padding: 23, flexDirection: "row", alignItems: "center", gap: 12},
+  exploreEyebrow: {fontSize: 8, letterSpacing: 1.5, color: "#c5cebd"},
+  exploreTitle: {fontSize: 24, lineHeight: 29, letterSpacing: -0.5, color: C.white, marginTop: 12},
+  exploreLink: {fontSize: 11, color: C.white},
+  about: {flexDirection: "row", justifyContent: "center", gap: 30, paddingTop: 20},
+  aboutLink: {minHeight: 44, flexDirection: "row", alignItems: "center", gap: 7},
+  footnote: {fontSize: 9, color: C.muted, textAlign: "center", paddingHorizontal: 20, marginTop: 6},
 });
