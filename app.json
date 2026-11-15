@@ -1,42 +1,47 @@
 {
   "expo": {
-    "name": "AVEN-App",
-    "slug": "AVEN-App",
+    "name": "AVEN",
+    "slug": "aven-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "avenapp",
-    "userInterfaceStyle": "automatic",
+    "icon": "./assets/images/aven-icon.png",
+    "scheme": "aven",
+    "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tarunk951.aven"
     },
     "android": {
+      "package": "com.tarunk951.aven",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/aven-adaptive.png",
+        "backgroundColor": "#263d33"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": true
     },
     "web": {
-      "output": "server",
-      "favicon": "./assets/images/favicon.png"
+      "output": "single",
+      "favicon": "./assets/images/aven-icon.png"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "asyncRoutes": false
+        }
+      ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#f4f5ee",
+          "image": "./assets/images/aven-splash.png",
+          "imageWidth": 120
         }
-      ]
+      ],
+      "./plugins/withBuildSettings"
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     }
   }
 }

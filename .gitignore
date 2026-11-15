@@ -41,3 +41,10 @@ example
 # generated native folders
 /ios
 /android
+
+# Local validation and generated artifacts
+/output/
+/dist-android/
+.env*
+!.env.example
+*.log
