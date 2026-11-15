@@ -18,7 +18,7 @@ export default function TabLayout() {
         headerShown: false,
         animation: "none",
         tabBarActiveTintColor: C.ink,
-        tabBarInactiveTintColor: "#9aa28f",
+        tabBarInactiveTintColor: C.muted,
         tabBarStyle: {
           height: 62 + Math.max(insets.bottom, 8),
           paddingBottom: Math.max(insets.bottom, 8),
@@ -28,7 +28,7 @@ export default function TabLayout() {
           backgroundColor: "#fff",
           elevation: 0,
         },
-        tabBarLabelStyle: { fontSize: 9, marginTop: 4 },
+        tabBarLabelStyle: { fontSize: 10, marginTop: 4 },
         tabBarBadgeStyle: {
           backgroundColor: C.ink,
           color: C.white,

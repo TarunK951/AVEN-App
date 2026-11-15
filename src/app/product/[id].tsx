@@ -155,8 +155,8 @@ export default function ProductScreen() {
             >
               <Heart
                 size={20}
-                color={C.ink}
-                fill={favorites.includes(p.id) ? C.ink : "transparent"}
+                color={favorites.includes(p.id) ? C.accent : C.ink}
+                fill={favorites.includes(p.id) ? C.accent : "transparent"}
                 strokeWidth={1.5}
               />
             </Pressable>
@@ -243,7 +243,7 @@ export default function ProductScreen() {
                 <Plus size={14} color={C.ink} />
               </Pressable>
             </View>
-            <Text style={[ui.small, { fontSize: 10 }]}>
+            <Text style={[ui.small, { fontSize: 10, flexShrink: 1 }]}>
               {p.category === "Accessories"
                 ? "The finishing touch."
                 : "Feel-good, everyday comfort."}
@@ -262,7 +262,7 @@ export default function ProductScreen() {
           </Button>
           <View style={s.shipping}>
             <Truck size={19} color={C.ink} />
-            <Text style={{ fontSize: 10, lineHeight: 18, color: C.muted }}>
+            <Text style={{ fontSize: 11, lineHeight: 18, color: C.muted, flex: 1 }}>
               Complimentary standard US shipping $75+{`\n`}A little comfort goes
               a long way.
             </Text>

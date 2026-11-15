@@ -223,6 +223,22 @@ export default function Checkout() {
       address.country,
       promo,
     ).shipping;
+  function clearFieldError(key: string) {
+    setErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  }
+  function updateAddress(next: Address, isBilling = false) {
+    const previous = isBilling ? billing : address;
+    (Object.keys(next) as (keyof Address)[]).forEach((key) => {
+      if (next[key] !== previous[key]) clearFieldError((isBilling ? "billing-" : "") + key);
+    });
+    if (isBilling) setBilling(next);
+    else setAddress(next);
+  }
   function back() {
     if (step > 1) {
       setStep(step - 1);
@@ -283,7 +299,7 @@ export default function Checkout() {
   if (!store.ready)
     return (
       <View testID="checkout-screen" style={ui.screen}>
-        <Header title="Checkout" back />
+        <Header title="Checkout" back search={false} />
         <Empty
           title="Getting your bag ready…"
           body="A little comfort is on its way."
@@ -293,7 +309,7 @@ export default function Checkout() {
   if (!store.bag.length && !posting)
     return (
       <View testID="checkout-screen" style={ui.screen}>
-        <Header title="Checkout" back />
+        <Header title="Checkout" back search={false} />
         <Empty
           title="Your bag is waiting."
           body="Add an everyday favorite before you head to checkout."
@@ -308,7 +324,7 @@ export default function Checkout() {
     );
   return (
     <View testID="checkout-screen" style={ui.screen}>
-      <Header back onBack={back} title="Checkout" />
+      <Header back onBack={back} title="Checkout" search={false} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -587,14 +603,14 @@ export default function Checkout() {
                 <Field
                   label="Email address"
                   value={email}
-                  onChange={setEmail}
+                  onChange={(value) => { setEmail(value); clearFieldError("email"); }}
                   keyboardType="email-address"
                   error={errors.email}
                 />
                 <Field
                   label="Phone number"
                   value={phone}
-                  onChange={setPhone}
+                  onChange={(value) => { setPhone(value); clearFieldError("phone"); }}
                   keyboardType="phone-pad"
                   optional
                   error={errors.phone}
@@ -604,7 +620,7 @@ export default function Checkout() {
                 </Text>
                 <AddressFields
                   address={address}
-                  onChange={setAddress}
+                  onChange={(value) => updateAddress(value)}
                   errors={errors}
                 />
                 <Text style={[ui.small, { fontSize: 9 }]}>
@@ -685,7 +701,7 @@ export default function Checkout() {
                   accessibilityRole="radio"
                   accessibilityState={{ checked: demoCard }}
                   accessibilityLabel="Demo Visa"
-                  onPress={() => setDemoCard(true)}
+                  onPress={() => { setDemoCard(true); clearFieldError("payment"); }}
                   style={[
                     s.card,
                     demoCard && {
@@ -721,7 +737,7 @@ export default function Checkout() {
                         fontStyle: "italic",
                         fontWeight: "700",
                         fontSize: 15,
-                        color: "#647d7b",
+                        color: C.ink,
                       }}
                     >
                       VISA
@@ -729,15 +745,15 @@ export default function Checkout() {
                   </View>
                   <Text
                     style={{
-                      fontSize: 20,
-                      color: "#8a9a7a",
-                      letterSpacing: 2,
+                      fontSize: 18,
+                      color: C.ink,
+                      letterSpacing: 1,
                       marginTop: 27,
                     }}
                   >
                     4242 4242 4242 4242
                   </Text>
-                  <View style={[ui.row, { marginTop: 20 }]}>
+                  <View style={[ui.row, { marginTop: 20, flexWrap: "wrap", rowGap: 8 }]}>
                     <Text style={[ui.small, { fontSize: 9 }]}>
                       EXPIRY 12/30
                     </Text>
@@ -776,7 +792,7 @@ export default function Checkout() {
                 {!sameBilling && (
                   <AddressFields
                     address={billing}
-                    onChange={setBilling}
+                    onChange={(value) => updateAddress(value, true)}
                     errors={errors}
                     prefix="billing-"
                   />

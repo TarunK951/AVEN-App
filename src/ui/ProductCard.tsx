@@ -43,8 +43,8 @@ export default function ProductCard({
         >
           <Heart
             size={18}
-            color={favorites.includes(p.id) ? "#8e4b57" : C.ink}
-            fill={favorites.includes(p.id) ? "#8e4b57" : "transparent"}
+            color={favorites.includes(p.id) ? C.accent : C.ink}
+            fill={favorites.includes(p.id) ? C.accent : "transparent"}
             strokeWidth={1.5}
           />
         </Pressable>
@@ -94,10 +94,13 @@ const s = StyleSheet.create({
   image: { position: "relative", backgroundColor: C.cream, overflow: "hidden" },
   badge: {
     position: "absolute",
-    left: 10,
-    top: 13,
-    fontSize: 6,
-    letterSpacing: 0.8,
+    left: 7,
+    top: 9,
+    fontSize: 7,
+    letterSpacing: 0.4,
+    backgroundColor: C.cream,
+    paddingHorizontal: 5,
+    paddingVertical: 4,
     color: C.ink,
     pointerEvents: "none",
   },
@@ -118,7 +121,7 @@ const s = StyleSheet.create({
   },
   name: { fontSize: 11, lineHeight: 17, color: C.ink, flex: 1 },
   price: { fontSize: 11, color: C.ink, paddingTop: 1 },
-  color: { fontSize: 9, color: C.muted, lineHeight: 17 },
+  color: { fontSize: 10, color: C.muted, lineHeight: 17 },
   bottom: { flexDirection: "row", alignItems: "center", gap: 7, marginTop: 8 },
   swatch: {
     height: 10,

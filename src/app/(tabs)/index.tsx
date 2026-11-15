@@ -36,7 +36,7 @@ export default function Home() {
             <View style={{ flexDirection: "row", gap: 10, marginTop: 26 }}>
               <Button
                 light
-                style={{ flex: 1, paddingHorizontal: 16 }}
+                style={{ flex: 1, paddingHorizontal: 12, gap: 6 }}
                 onPress={() =>
                   router.push({
                     pathname: "/(tabs)/shop",
@@ -48,7 +48,7 @@ export default function Home() {
               </Button>
               <Button
                 light
-                style={{ flex: 1, paddingHorizontal: 16 }}
+                style={{ flex: 1, paddingHorizontal: 12, gap: 6 }}
                 onPress={() =>
                   router.push({
                     pathname: "/(tabs)/shop",
@@ -227,7 +227,7 @@ const s = StyleSheet.create({
     padding: 11,
     flexDirection: "row",
   },
-  announcementText: { fontSize: 9, color: "#607455" },
+  announcementText: { fontSize: 10, color: C.muted, flexShrink: 1 },
   hero: { height: 550, position: "relative" },
   heroCopy: { position: "absolute", bottom: 38, left: 24, right: 24 },
   heroTitle: {
@@ -246,7 +246,7 @@ const s = StyleSheet.create({
     gap: 11,
     backgroundColor: C.cream,
   },
-  noteText: { fontSize: 10, color: C.muted },
+  noteText: { fontSize: 10, color: C.muted, flexShrink: 1, lineHeight: 16 },
   campaign: { height: 460, position: "relative" },
   campaignCopy: { position: "absolute", left: 25, right: 25, bottom: 35 },
   campaignTitle: {

@@ -23,9 +23,11 @@ export default function SearchScreen() {
           flexDirection: "row",
           alignItems: "center",
           gap: 12,
-          borderBottomWidth: 1,
-          borderColor: C.ink,
-          paddingBottom: 12,
+          borderWidth: 1,
+          borderColor: C.line,
+          backgroundColor: C.cream,
+          paddingHorizontal: 14,
+          minHeight: 50,
         }}
       >
         <Search size={20} color={C.ink} />
@@ -34,10 +36,10 @@ export default function SearchScreen() {
           autoFocus
           autoCapitalize="none"
           placeholder="Try fleece, leggings, or pink…"
-          placeholderTextColor="#98a08f"
+          placeholderTextColor={C.muted}
           value={query}
           onChangeText={setQuery}
-          style={{ flex: 1, fontSize: 15, color: C.ink, minHeight: 35 }}
+          style={{ flex: 1, fontSize: 13, color: C.ink, minHeight: 46, minWidth: 0 }}
         />
         {query.length > 0 && (
           <Pressable

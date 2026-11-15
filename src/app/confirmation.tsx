@@ -29,7 +29,7 @@ export default function Confirmation() {
       >
         <View style={{ alignItems: "center", paddingVertical: 25 }}>
           <View style={s.check}>
-            <Check size={26} color="#59774a" strokeWidth={1.5} />
+            <Check size={26} color={C.ink} strokeWidth={1.5} />
           </View>
           <Text
             style={[
@@ -167,7 +167,7 @@ const s = StyleSheet.create({
   note: {
     fontSize: 10,
     lineHeight: 19,
-    color: "#7d916a",
+    color: C.muted,
     backgroundColor: C.cream,
     padding: 18,
     textAlign: "center",

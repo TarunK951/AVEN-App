@@ -63,7 +63,7 @@ export function Header({
 }) {
   const { count } = useStore();
   return (
-    <SafeAreaView edges={["top"]} style={{ backgroundColor: C.white }}>
+    <SafeAreaView edges={["top"]} style={{ backgroundColor: C.white, flexShrink: 0 }}>
       <View style={s.header}>
         <View style={{ width: 42 }}>
           {back ? (
@@ -108,7 +108,7 @@ export function Header({
           )}
         </Pressable>
       </View>
-      {search && !back && (
+      {search && (
         <View style={s.searchWrap}>
           <Pressable
             accessibilityRole="button"

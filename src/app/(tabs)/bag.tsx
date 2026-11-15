@@ -2,7 +2,6 @@ import { ScrollView, Text, View, Pressable, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Plus, Minus, X, Truck } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useStore } from "../../store/store";
 import { products } from "../../data/catalog";
 import { productImage } from "../../data/images";
@@ -33,7 +32,7 @@ export default function Bag() {
           >
             <View style={s.shipping}>
               <Truck size={16} color={C.ink} />
-              <Text style={{ fontSize: 10, color: C.ink }}>
+              <Text style={{ fontSize: 11, lineHeight: 17, color: C.ink, flex: 1 }}>
                 {subtotal >= 7500
                   ? "Your bag qualifies for free standard shipping."
                   : `You’re ${money(7500 - subtotal)} away from free shipping.`}
@@ -96,7 +95,7 @@ export default function Bag() {
                         accessibilityRole="button"
                         accessibilityLabel={`Remove ${p.name}`}
                         onPress={() => remove(p.id, item.size)}
-                        style={{ marginLeft: "auto", padding: 7 }}
+                        style={{ marginLeft: "auto", padding: 5 }}
                       >
                         <X size={15} color={C.muted} />
                       </Pressable>
@@ -142,7 +141,7 @@ const s = StyleSheet.create({
   },
   item: {
     flexDirection: "row",
-    gap: 18,
+    gap: 14,
     paddingVertical: 24,
     borderBottomWidth: 1,
     borderBottomColor: C.line,
@@ -153,12 +152,12 @@ const s = StyleSheet.create({
   quantity: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 8,
     marginTop: 9,
   },
   quantityButton: {
-    width: 26,
-    height: 28,
+    width: 32,
+    height: 36,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,

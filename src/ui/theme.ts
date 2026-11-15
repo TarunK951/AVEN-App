@@ -1,12 +1,14 @@
 import { Platform, StyleSheet } from "react-native";
 export const C = {
   ink: "#263d33",
-  muted: "#7d8877",
+  muted: "#626f60",
   cream: "#f4f5ee",
   line: "#e0e5d8",
   white: "#ffffff",
   soft: "#eaf0e2",
   red: "#a04f42",
+  accent: "#8e4b57",
+  subtle: "#a7b29e",
 };
 export const ui = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.white },
