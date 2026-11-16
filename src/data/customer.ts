@@ -1,3 +1,4 @@
+import { orderStages, type Fulfillment } from "./fulfillment";
 import { products, isAvailable } from "./catalog";
 export { isAvailable };
 import {
@@ -45,6 +46,7 @@ export type CustomerData = {
   >;
   tickets: { id: string; topic: string; message: string }[];
   loyalty: boolean;
+  fulfillment: Partial<Record<string, Fulfillment>>;
 };
 export const emptyCustomer: CustomerData = {
   profile: { firstName: "", lastName: "", email: "", phone: "" },
@@ -63,6 +65,7 @@ export const emptyCustomer: CustomerData = {
   orderActions: {},
   tickets: [],
   loyalty: false,
+  fulfillment: {},
 };
 export function validateProfile(p: CustomerData["profile"]) {
   const errors: Record<string, string> = {};
@@ -180,5 +183,33 @@ export function hydrateCustomer(raw: unknown): CustomerData {
           .slice(0, 50)
       : [],
     loyalty: v.loyalty === true,
+    fulfillment:
+      v.fulfillment && typeof v.fulfillment === "object"
+        ? Object.fromEntries(
+            Object.entries(v.fulfillment)
+              .filter(
+                ([id, f]) =>
+                  id.startsWith("AVN-") &&
+                  f &&
+                  orderStages.some((s) => s.key === f.stage) &&
+                  Array.isArray(f.events),
+              )
+              .map(([id, f]) => [
+                id,
+                {
+                  stage: f!.stage,
+                  events: f!.events
+                    .filter(
+                      (e) =>
+                        e &&
+                        orderStages.some((s) => s.key === e.stage) &&
+                        typeof e.at === "string" &&
+                        Number.isFinite(Date.parse(e.at)),
+                    )
+                    .slice(0, 6),
+                },
+              ]),
+          )
+        : {},
   };
 }

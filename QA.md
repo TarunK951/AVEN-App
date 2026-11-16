@@ -23,3 +23,13 @@ Current collection: five original AVEN products with ten generated product/detai
 - Screenshots: ignored output/aven-original-product.png and output/aven-original-quality.png.
 
 No APK was built. Native hardware behavior and device performance have not been verified.
+
+## Order stages and review integration
+
+- Added persistent order stages: placed, confirmed, packed, shipped, out for delivery and delivered. The expandable Manage order progress controls update status on this device; no carrier or fulfillment service is called.
+- Order lists, activity and detail timelines use the same status source. Cancellation is available before shipping; returns/exchanges unlock after delivery. Cancelled/requested orders stop progression.
+- Delivered items link to their reviews. Review creation, editing without duplication, removal, rating breakdown and sorting are supported. Product rating summaries update immediately.
+- Mobile browser checks exercised every status transition, cancellation eligibility before/after shipping, delivered return eligibility, review validation, four-star save, five-star edit, unchanged count of one, product rating sync and persistence across reload. Order layout fitted 320px; review layout was checked at 390px.
+- 18 tests cover lifecycle transitions, action eligibility, status hydration and the existing catalog/shopping checks. TypeScript and production web export passed.
+- Screenshots: output/aven-delivered.png and output/aven-reviews.png (ignored).
+- No APK or backend integration was created.

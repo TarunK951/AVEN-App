@@ -1,3 +1,4 @@
+import { fulfillmentStatus } from "../../data/fulfillment";
 import { Text, View, Pressable } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
@@ -41,8 +42,9 @@ export default function Orders() {
               style={a.card}
             >
               <Text style={ui.eyebrow}>
-                {(
-                  data.orderActions[o.id]?.status || "Awaiting confirmation"
+                {fulfillmentStatus(
+                  data.fulfillment[o.id]?.stage,
+                  data.orderActions[o.id]?.status,
                 ).toUpperCase()}
               </Text>
               <Text style={a.label}>{o.id}</Text>

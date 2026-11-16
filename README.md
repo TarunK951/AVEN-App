@@ -16,7 +16,7 @@ Product pages include image thumbnails and zoom, individual descriptions, color 
 
 ## Features
 
-Home, collection filters, sorting, search history, favorites, bag, saved addresses, profile editing, pay-on-delivery checkout, order details, requests, rewards, support messages and browsing recommendations. Data is saved on-device with AsyncStorage. No server services are required for the frontend. Checkout saves an order locally and leaves its status awaiting confirmation; it does not call a payment or fulfillment service.
+Home, collection filters, sorting, search history, favorites, bag, saved addresses, profile editing, pay-on-delivery checkout, order details, requests, rewards, support messages and browsing recommendations. Data is saved on-device with AsyncStorage. No server services are required for the frontend. Checkout saves an order locally. Expandable order-management controls advance saved progress through confirmed, packed, shipped, out for delivery and delivered. Cancellation and return eligibility follow those stages. Delivered items link to reviews; edits update the rating without creating duplicates. No payment, carrier or fulfillment service is called.
 
 ## Run and verify
 

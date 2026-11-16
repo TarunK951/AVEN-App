@@ -1,3 +1,4 @@
+import { fulfillmentStatus } from "../../data/fulfillment";
 import { View, Text } from "react-native";
 import { router } from "expo-router";
 import { Page, Row, Notice, a } from "../../ui/account";
@@ -19,9 +20,10 @@ export default function Activity() {
           <Row
             key={o.id}
             title={`Order ${o.id}`}
-            subtitle={
-              data.orderActions[o.id]?.status || "Saved · Awaiting confirmation"
-            }
+            subtitle={fulfillmentStatus(
+              data.fulfillment[o.id]?.stage,
+              data.orderActions[o.id]?.status,
+            )}
             onPress={() =>
               router.push({ pathname: "/order/[id]", params: { id: o.id } })
             }

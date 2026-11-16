@@ -193,3 +193,50 @@ test("customer-facing screens contain no placeholder labels and all original ima
     assert.ok(existsSync(`assets/originals/aven-${name}-detail.png`));
   }
 });
+
+import {
+  orderStages,
+  advanceOrder,
+  canCancel,
+  canReturn,
+  fulfillmentStatus,
+} from "../src/data/fulfillment";
+test("order progression follows every stage once and stops at delivery", () => {
+  let f;
+  for (const step of orderStages.slice(1)) {
+    f = advanceOrder(f, "2026-11-16T12:00:00Z");
+    assert.equal(f.stage, step.key);
+  }
+  assert.equal(f!.events.length, 5);
+  assert.equal(advanceOrder(f, "2026-11-17T12:00:00Z"), f);
+});
+test("cancellation and returns follow fulfillment eligibility", () => {
+  assert.equal(canCancel("placed"), true);
+  assert.equal(canCancel("packed"), true);
+  assert.equal(canCancel("shipped"), false);
+  assert.equal(canCancel("delivered"), false);
+  assert.equal(canReturn("shipped"), false);
+  assert.equal(canReturn("delivered"), true);
+  assert.equal(fulfillmentStatus("delivered"), "Delivered");
+  assert.equal(
+    fulfillmentStatus("delivered", "return requested"),
+    "Return requested",
+  );
+});
+test("order progress survives hydration while malformed stage data is removed", () => {
+  const d = hydrateCustomer({
+    fulfillment: {
+      "AVN-ONE": {
+        stage: "delivered",
+        events: [
+          { stage: "delivered", at: "2026-11-16T12:00:00Z" },
+          { stage: "bad", at: "bad" },
+        ],
+      },
+      "AVN-BAD": { stage: "invalid", events: [] },
+    },
+  });
+  assert.equal(d.fulfillment["AVN-ONE"]?.stage, "delivered");
+  assert.equal(d.fulfillment["AVN-ONE"]?.events.length, 1);
+  assert.equal(d.fulfillment["AVN-BAD"], undefined);
+});
