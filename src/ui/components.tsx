@@ -109,7 +109,7 @@ export function Header({
         )}
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Open bag, ${count} items`}
+          accessibilityLabel={`Open bag, ${count} ${count === 1 ? "item" : "items"}`}
           style={ui.iconButton}
           onPress={() => router.navigate("/(tabs)/bag")}
         >
@@ -201,7 +201,7 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderColor: "#f0f2eb",
+    borderColor: "#ededee",
   },
   searchWrap: { paddingHorizontal: 20, paddingBottom: 14, paddingTop: 10 },
   searchBar: {

@@ -126,6 +126,6 @@ const s = StyleSheet.create({
     width: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#dbdfd4",
+    borderColor: "#dedfe1",
   },
 });

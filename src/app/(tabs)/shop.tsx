@@ -197,7 +197,7 @@ export default function Shop() {
                 </Text>
               </Pressable>
               <Text style={[ui.small, { flexShrink: 1, textAlign: "right" }]}>
-                {data.length} pieces ·{" "}
+                {data.length} {data.length === 1 ? "piece" : "pieces"} ·{" "}
                 {["Featured", "Price: low to high", "Price: high to low"][sort]}
               </Text>
             </View>
@@ -280,7 +280,7 @@ export default function Shop() {
               />
               <Button
                 onPress={() => setFiltersOpen(false)}
-              >{`Show ${data.length} pieces`}</Button>
+              >{`Show ${data.length} ${data.length === 1 ? "piece" : "pieces"}`}</Button>
               <Pressable accessibilityRole="button" onPress={clearDiscovery}>
                 <Text style={a.link}>Reset filters</Text>
               </Pressable>

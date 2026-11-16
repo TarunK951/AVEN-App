@@ -36,7 +36,7 @@ export default function Account() {
         />
         <Row
           title="Saved addresses"
-          subtitle={`${data.addresses.length} addresses · Choose a default for checkout`}
+          subtitle={`${data.addresses.length} ${data.addresses.length === 1 ? "address" : "addresses"} · Choose a default for checkout`}
           onPress={() => router.push("/account/addresses")}
         />
         <Row

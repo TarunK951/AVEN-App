@@ -15,7 +15,7 @@
       "package": "com.tarunk951.aven",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/aven-adaptive.png",
-        "backgroundColor": "#263d33"
+        "backgroundColor": "#282a2d"
       },
       "predictiveBackGestureEnabled": true
     },
@@ -33,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#f4f5ee",
+          "backgroundColor": "#f3f3f3",
           "image": "./assets/images/aven-splash.png",
           "imageWidth": 120
         }

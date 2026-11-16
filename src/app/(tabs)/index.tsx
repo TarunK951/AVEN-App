@@ -36,7 +36,7 @@ export default function Home() {
             style={StyleSheet.absoluteFill}
           />
           <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#12271d70" }]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: "#17191c70" }]}
           />
           <View style={s.heroCopy}>
             <Text style={[ui.eyebrow, { color: "#fff", fontSize: 8 }]}>
@@ -118,7 +118,7 @@ export default function Home() {
             contentFit="cover"
           />
           <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#12271d70" }]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: "#17191c70" }]}
           />
           <View style={s.campaignCopy}>
             <Text style={[ui.eyebrow, { color: C.white, fontSize: 8 }]}>

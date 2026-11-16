@@ -144,10 +144,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             flex: 1,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#f4f5ee",
+            backgroundColor: "#f3f3f3",
           }}
         >
-          <ActivityIndicator color="#263d33" />
+          <ActivityIndicator color="#282a2d" />
         </View>
       )}
     </Context.Provider>

@@ -1,6 +1,6 @@
 # AVEN App
 
-A React Native / Expo shopping frontend with an original five-piece AVEN collection.
+A React Native / Expo shopping frontend with an original five-piece AVEN collection and a neutral gray/charcoal interface.
 
 ## Collection
 

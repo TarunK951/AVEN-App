@@ -86,7 +86,7 @@ function Field({
         maxLength={150}
         style={[
           ui.input,
-          error && { borderColor: C.red, backgroundColor: "#fdf8f5" },
+          error && { borderColor: C.red, backgroundColor: "#faf2f2" },
         ]}
       />
       {error && <Text style={ui.error}>{error}</Text>}
@@ -447,7 +447,7 @@ export default function Checkout() {
                   onPress={() => setPromo(false)}
                   style={ui.row}
                 >
-                  <Text style={{ fontSize: 11, color: "#60774e" }}>
+                  <Text style={{ fontSize: 11, color: "#282a2d" }}>
                     AVEN10 · 10% off
                   </Text>
                   <X size={15} color={C.muted} />
@@ -714,8 +714,8 @@ export default function Checkout() {
                     style={[
                       s.shipping,
                       shipping === option.id && {
-                        borderColor: "#6d865c",
-                        backgroundColor: "#f4f7ee",
+                        borderColor: "#55585f",
+                        backgroundColor: "#f3f3f3",
                       },
                     ]}
                   >
@@ -881,7 +881,7 @@ const s = StyleSheet.create({
     padding: 17,
     borderWidth: 1,
     borderColor: C.line,
-    backgroundColor: "#fafbf7",
+    backgroundColor: "#f7f7f7",
     marginBottom: 27,
   },
   shipping: {
@@ -897,7 +897,7 @@ const s = StyleSheet.create({
     width: 15,
     height: 15,
     borderWidth: 1,
-    borderColor: "#b7c4aa",
+    borderColor: "#a4a7ad",
     borderRadius: 8,
   },
   card: { padding: 20, borderWidth: 1, borderColor: C.line },

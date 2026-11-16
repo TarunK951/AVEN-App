@@ -71,7 +71,7 @@ export default function You() {
           />
           <Row
             title="Saved addresses"
-            subtitle={`${data.addresses.length} saved places`}
+            subtitle={`${data.addresses.length} saved ${data.addresses.length === 1 ? "place" : "places"}`}
             onPress={() => router.push("/account/addresses")}
           />
           <Row
@@ -171,7 +171,7 @@ export default function You() {
               <ArrowUpRight size={16} color={C.white} />
             </View>
           </View>
-          <Mark size={58} color="#a6b3a0" />
+          <Mark size={58} color="#a9acb2" />
         </Pressable>
         <View style={s.about}>
           {[
@@ -249,7 +249,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  exploreEyebrow: { fontSize: 8, letterSpacing: 1.5, color: "#c5cebd" },
+  exploreEyebrow: { fontSize: 8, letterSpacing: 1.5, color: "#d2d3d6" },
   exploreTitle: {
     fontSize: 24,
     lineHeight: 29,

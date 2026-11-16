@@ -1,14 +1,14 @@
 import { Platform, StyleSheet } from "react-native";
 export const C = {
-  ink: "#263d33",
-  muted: "#626f60",
-  cream: "#f4f5ee",
-  line: "#e0e5d8",
+  ink: "#282a2d",
+  muted: "#666a70",
+  cream: "#f3f3f3",
+  line: "#dedfe1",
   white: "#ffffff",
-  soft: "#eaf0e2",
-  red: "#a04f42",
-  accent: "#8e4b57",
-  subtle: "#a7b29e",
+  soft: "#ededee",
+  red: "#9c4444",
+  accent: "#55585f",
+  subtle: "#a4a7ad",
 };
 export const ui = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.white },
@@ -112,7 +112,7 @@ export const ui = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "#14291f66",
+    backgroundColor: "#17191c66",
   },
   sheet: {
     backgroundColor: C.white,

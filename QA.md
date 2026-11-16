@@ -33,3 +33,13 @@ No APK was built. Native hardware behavior and device performance have not been 
 - 18 tests cover lifecycle transitions, action eligibility, status hydration and the existing catalog/shopping checks. TypeScript and production web export passed.
 - Screenshots: output/aven-delivered.png and output/aven-reviews.png (ignored).
 - No APK or backend integration was created.
+
+## Gray palette and complete mobile journey
+
+- Changed interface colors to charcoal #282a2d, gray text #666a70, light-gray panels #f3f3f3 and neutral borders #dedfe1. Updated selected states, favorites, loading screens, overlays, checkout cards and launch background configuration. Product colors and photography remain accurate to the collection. Validation errors retain a muted red.
+- Palette contrast checks: secondary text on panels 4.90:1; white on charcoal 14.39:1. This is a palette calculation, not an accessibility certification.
+- Fixed singular filter/result, saved-address and bag accessibility labels.
+- Browser journey: Home/Shop → combined size/color filters → favorite → Saved → product thumbnails/zoom → size M → Bag quantity increase/decrease → Checkout → invalid email validation → AVEN10 discount → express shipping → checkout back navigation → pay on delivery → confirmation → My Orders → every stage through Delivered → item review → four-star save → five-star edit without duplicate → reload persistence.
+- Reconciled order total: $128 − $12.80 + $18 shipping = $133.20. Confirmed cancellation is hidden after shipping and returns are hidden until delivery. Delivery and reviews remain on-device frontend state.
+- Checked narrow 320px and standard 390px browser layouts; checked document widths matched viewports. Saved screenshots: ignored output/aven-gray-shop.png, aven-gray-delivered.png and aven-gray-reviews.png.
+- Final TypeScript, all 18 tests, production web export and git whitespace check passed. No APK was created; physical-device behavior remains unverified.
