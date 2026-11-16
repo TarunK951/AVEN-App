@@ -6,8 +6,19 @@ import { Header, Button, Mark } from "../../ui/components";
 import { C, ui } from "../../ui/theme";
 import { images } from "../../data/images";
 import { products } from "../../data/catalog";
+import { useCustomer } from "../../store/customer";
+import { Row } from "../../ui/account";
 import ProductCard from "../../ui/ProductCard";
 export default function Home() {
+  const { data: customer } = useCustomer();
+  const preferredGender = products.find(
+    (p) => p.id === customer.viewed[0],
+  )?.gender;
+  const recommendations = products
+    .filter(
+      (p) => p.gender === preferredGender && !customer.viewed.includes(p.id),
+    )
+    .slice(0, 4);
   return (
     <View testID="home-screen" style={ui.screen}>
       <Header />
@@ -192,6 +203,45 @@ export default function Home() {
             </Pressable>
           ))}
         </ScrollView>
+        {recommendations.length > 0 && (
+          <View style={ui.section}>
+            <Text style={ui.eyebrow}>INSPIRED BY YOUR BROWSING</Text>
+            <Text style={[ui.h2, { marginTop: 12, marginBottom: 20 }]}>
+              A few more you might love.
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 13 }}
+            >
+              {recommendations.map((p) => (
+                <ProductCard key={p.id} product={p} width={160} />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+        {customer.viewed.length > 0 && (
+          <View style={ui.section}>
+            <Row
+              title="Recently viewed"
+              subtitle="A second look at the pieces you loved"
+              onPress={() => router.push("/account/recent")}
+            />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 13, paddingTop: 20 }}
+            >
+              {customer.viewed.slice(0, 5).map((id) => (
+                <ProductCard
+                  key={id}
+                  product={products.find((p) => p.id === id)!}
+                  width={160}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
         <View style={s.story}>
           <Mark size={30} />
           <Text style={[ui.h2, { marginTop: 20, textAlign: "center" }]}>

@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { type Product } from "../data/catalog";
 import { productImage } from "../data/images";
 import { useStore } from "../store/store";
+import { demoStock } from "../data/customer";
 import { C } from "./theme";
 export default function ProductCard({
   product: p,
@@ -32,7 +33,11 @@ export default function ProductCard({
           />
         </Pressable>
         <Text style={s.badge}>
-          {p.id === 0 ? "BEST SELLER" : "NEW ARRIVAL"}
+          {!demoStock(p.id)
+            ? "OUT OF STOCK"
+            : p.id === 0
+              ? "BEST SELLER"
+              : "NEW ARRIVAL"}
         </Text>
         <Pressable
           accessibilityRole="button"

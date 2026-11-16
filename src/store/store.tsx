@@ -1,3 +1,5 @@
+import { demoStock } from "../data/customer";
+import { isReceipt } from "../data/orders";
 import {
   createContext,
   useContext,
@@ -17,6 +19,7 @@ export type Receipt = {
   totals: ReturnType<typeof checkoutTotals>;
   country: string;
   shipping: ShippingMethod;
+  createdAt?: string;
 };
 type Store = {
   bag: BagItem[];
@@ -24,6 +27,7 @@ type Store = {
   ready: boolean;
   storageError: boolean;
   receipt: Receipt | null;
+  orders: Receipt[];
   count: number;
   subtotal: number;
   add: (id: number, size: string, quantity?: number) => void;
@@ -41,6 +45,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [bag, setBag] = useState<BagItem[]>([]),
     [favorites, setFavorites] = useState<number[]>([]),
     [receipt, setReceipt] = useState<Receipt | null>(null),
+    [orders, setOrders] = useState<Receipt[]>([]),
     [ready, setReady] = useState(false),
     [storageError, setStorageError] = useState(false);
   useEffect(() => {
@@ -52,6 +57,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           try {
             const data = JSON.parse(raw);
             setBag(validBag(data.bag));
+            if (Array.isArray(data.orders))
+              setOrders(data.orders.filter(isReceipt).slice(0, 100));
+            else if (isReceipt(data.receipt)) setOrders([data.receipt]);
             setFavorites(
               Array.isArray(data.favorites)
                 ? data.favorites.filter((id: number) =>
@@ -59,12 +67,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
                   )
                 : [],
             );
-            if (
-              data.receipt?.id?.startsWith("AVN-") &&
-              Array.isArray(data.receipt.items) &&
-              Number.isFinite(data.receipt.totals?.total)
-            )
-              setReceipt(data.receipt);
+            if (isReceipt(data.receipt)) setReceipt(data.receipt);
           } catch {
             setStorageError(true);
           }
@@ -84,13 +87,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (ready)
       AsyncStorage.setItem(
         "@aven/store/v1",
-        JSON.stringify({ bag, favorites, receipt }),
+        JSON.stringify({ bag, favorites, receipt, orders }),
       ).catch(() => setStorageError(true));
-  }, [bag, favorites, receipt, ready]);
+  }, [bag, favorites, receipt, orders, ready]);
   const store: Store = {
     bag,
     favorites,
     receipt,
+    orders,
     ready,
     storageError,
     count: bag.reduce((s, i) => s + i.quantity, 0),
@@ -114,15 +118,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         old.includes(id) ? old.filter((x) => x !== id) : [...old, id],
       ),
     complete: (shipping, country, promo) => {
-      if (!bag.length) return null;
+      if (!bag.length || bag.some((i) => !demoStock(i.id, i.size))) return null;
       const next: Receipt = {
         id: "AVN-" + Date.now().toString(36).toUpperCase(),
+        createdAt: new Date().toISOString(),
         items: bag.map((i) => ({ ...i })),
         totals: checkoutTotals(subtotalFor(bag), shipping, country, promo),
         country,
         shipping,
       };
       setReceipt(next);
+      setOrders((old) => [next, ...old].slice(0, 100));
       setBag([]);
       return next;
     },

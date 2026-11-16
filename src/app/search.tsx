@@ -6,9 +6,12 @@ import { Image } from "expo-image";
 import { Header, Empty } from "../ui/components";
 import { products } from "../data/catalog";
 import { productImage } from "../data/images";
+import { useCustomer } from "../store/customer";
+import { Choice, a } from "../ui/account";
 import { C, ui } from "../ui/theme";
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
+  const { data, update, rememberSearch } = useCustomer();
   const matches = products.filter((p) =>
     `${p.name} ${p.color} ${p.category} ${p.gender}`
       .toLowerCase()
@@ -35,11 +38,19 @@ export default function SearchScreen() {
           accessibilityLabel="Search products"
           autoFocus
           autoCapitalize="none"
+          returnKeyType="search"
+          onSubmitEditing={() => rememberSearch(query)}
           placeholder="Try fleece, leggings, or pink…"
           placeholderTextColor={C.muted}
           value={query}
           onChangeText={setQuery}
-          style={{ flex: 1, fontSize: 13, color: C.ink, minHeight: 46, minWidth: 0 }}
+          style={{
+            flex: 1,
+            fontSize: 13,
+            color: C.ink,
+            minHeight: 46,
+            minWidth: 0,
+          }}
         />
         {query.length > 0 && (
           <Pressable
@@ -54,6 +65,27 @@ export default function SearchScreen() {
       <Text style={[ui.eyebrow, { paddingHorizontal: 22, marginBottom: 15 }]}>
         {query ? "YOUR SEARCH RESULTS" : "DISCOVER YOUR EVERYDAY"}
       </Text>
+      {!query && data.recentSearches.length > 0 && (
+        <View style={{ paddingHorizontal: 22, paddingBottom: 18, gap: 12 }}>
+          <Text style={ui.eyebrow}>RECENT SEARCHES</Text>
+          <View style={a.wrap}>
+            {data.recentSearches.map((q) => (
+              <Choice
+                key={q}
+                label={q}
+                selected={false}
+                onPress={() => setQuery(q)}
+              />
+            ))}
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => update((old) => ({ ...old, recentSearches: [] }))}
+          >
+            <Text style={ui.link}>Clear recent searches</Text>
+          </Pressable>
+        </View>
+      )}
       <FlatList
         keyboardShouldPersistTaps="handled"
         data={matches}
@@ -72,9 +104,10 @@ export default function SearchScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`View ${p.name}`}
-            onPress={() =>
-              router.push({ pathname: "/product/[id]", params: { id: p.id } })
-            }
+            onPress={() => {
+              rememberSearch(query);
+              router.push({ pathname: "/product/[id]", params: { id: p.id } });
+            }}
             style={{
               flexDirection: "row",
               gap: 17,

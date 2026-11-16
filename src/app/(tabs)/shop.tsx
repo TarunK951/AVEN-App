@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   View,
+  Modal,
   Text,
   FlatList,
   Pressable,
@@ -13,6 +14,9 @@ import { SlidersHorizontal } from "lucide-react-native";
 import { Header, Empty } from "../../ui/components";
 import { ui, C } from "../../ui/theme";
 import { products, collections } from "../../data/catalog";
+import { matchesDiscovery } from "../../data/discovery";
+import { Choice, Toggle, a } from "../../ui/account";
+import { Button } from "../../ui/components";
 import ProductCard from "../../ui/ProductCard";
 export default function Shop() {
   const { width } = useWindowDimensions();
@@ -31,6 +35,17 @@ export default function Shop() {
     setEdit(params.collection ?? "");
     setCategory("All");
   }, [params.department, params.collection]);
+  const [filtersOpen, setFiltersOpen] = useState(false),
+    [size, setSize] = useState(""),
+    [color, setColor] = useState(""),
+    [under150, setUnder150] = useState(false),
+    [inStock, setInStock] = useState(false);
+  const clearDiscovery = () => {
+    setSize("");
+    setColor("");
+    setUnder150(false);
+    setInStock(false);
+  };
   const collection = collections[edit];
   const data = products
     .filter(
@@ -41,7 +56,8 @@ export default function Shop() {
             : p.gender === department)) &&
         (category === "All" || p.category === category) &&
         (!collection?.ids || collection.ids.includes(p.id)) &&
-        (!collection?.gender || p.gender === collection.gender),
+        (!collection?.gender || p.gender === collection.gender) &&
+        matchesDiscovery(p, { size, color, under150, inStock }),
     )
     .sort((a, b) =>
       sort === 1
@@ -163,8 +179,25 @@ export default function Shop() {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={ui.small}>{data.length} pieces</Text>
-              <Text style={ui.small}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Open product filters"
+                onPress={() => setFiltersOpen(true)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  paddingVertical: 8,
+                }}
+              >
+                <SlidersHorizontal size={15} color={C.ink} />
+                <Text style={ui.small}>
+                  Filters
+                  {size || color || under150 || inStock ? " · Active" : ""}
+                </Text>
+              </Pressable>
+              <Text style={[ui.small, { flexShrink: 1, textAlign: "right" }]}>
+                {data.length} pieces ·{" "}
                 {["Featured", "Price: low to high", "Price: high to low"][sort]}
               </Text>
             </View>
@@ -179,10 +212,82 @@ export default function Shop() {
               setDepartment("All");
               setCategory("All");
               setEdit("");
+              clearDiscovery();
             }}
           />
         }
       />
+      <Modal
+        visible={filtersOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setFiltersOpen(false)}
+      >
+        <View style={ui.modalBackdrop}>
+          <View style={[ui.sheet, { maxHeight: "88%" }]}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ gap: 20, paddingBottom: 12 }}
+            >
+              <View style={ui.row}>
+                <Text style={ui.h2}>Find your feel-good.</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Close filters"
+                  onPress={() => setFiltersOpen(false)}
+                  style={ui.iconButton}
+                >
+                  <Text style={{ fontSize: 22, color: C.ink }}>×</Text>
+                </Pressable>
+              </View>
+              <Text style={ui.eyebrow}>SIZE</Text>
+              <View style={a.wrap}>
+                {["Any size", "XS", "S", "M", "L", "XL", "One Size"].map(
+                  (x) => (
+                    <Choice
+                      key={x}
+                      label={x}
+                      selected={size === (x === "Any size" ? "" : x)}
+                      onPress={() => setSize(x === "Any size" ? "" : x)}
+                    />
+                  ),
+                )}
+              </View>
+              <Text style={ui.eyebrow}>COLOR</Text>
+              <View style={a.wrap}>
+                {["Any color", ...new Set(products.map((p) => p.color))].map(
+                  (x) => (
+                    <Choice
+                      key={x}
+                      label={x}
+                      selected={color === (x === "Any color" ? "" : x)}
+                      onPress={() => setColor(x === "Any color" ? "" : x)}
+                    />
+                  ),
+                )}
+              </View>
+              <Toggle
+                label="Under $150"
+                description="Find everyday pieces up to $150 USD."
+                value={under150}
+                onChange={setUnder150}
+              />
+              <Toggle
+                label="In stock only"
+                description="Uses sample inventory, including the selected size."
+                value={inStock}
+                onChange={setInStock}
+              />
+              <Button
+                onPress={() => setFiltersOpen(false)}
+              >{`Show ${data.length} pieces`}</Button>
+              <Pressable accessibilityRole="button" onPress={clearDiscovery}>
+                <Text style={a.link}>Reset filters</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

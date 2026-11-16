@@ -6,14 +6,17 @@ Website: https://github.com/TarunK951/AVEN
 
 ## Included
 
-- Editorial Home screen, collection browsing by department/category, and price sorting
-- Product galleries, image viewer, size/quantity selection, and related products
-- Search, persistent saved favorites, and a persistent shopping bag
+- Editorial Home screen, department/category browsing, price sorting, and size/color/price/sample-stock filters
+- Product galleries, image viewer, size/quantity selection, local reviews, stock alerts, recently viewed pieces and browsing-based recommendations
+- Search with local recent searches, persistent favorites and shopping bag
+- Local account/profile editor, saved addresses with default selection, and checkout autofill
+- My Orders, receipt details, sample tracking, local cancellation/return/exchange requests and buy-again
+- Support FAQs and saved drafts, local activity/preferences, AVEN Circle preview rewards and delivery/currency estimates
 - Address, standard/express shipping, demo payment, optional separate billing, and confirmation screens
 - AVEN10 demo discount and totals calculated in integer cents
 - Local photography, AVEN launcher icon/splash, and Android/iOS identifier `com.tarunk951.aven`
 
-Bag, favorites, and the last sample receipt are saved on the device using AsyncStorage. Contact and street address entries stay only in checkout memory. No real card data is collected, and no payment, order, shipment, or email is sent.
+Bag, favorites, order history, profile, explicitly saved addresses, reviews, browsing history, preferences, requests and support drafts are stored locally with AsyncStorage. Profile/address saving is explicit; edits made only in checkout stay in screen memory. Receipts do not store street/contact details. No real card data is collected, and no payment, real order, shipment, support message, push notification or email is sent. Use fictional data for this prototype. Currency estimates use illustrative fixed rates; checkout remains USD.
 
 ## Run
 

@@ -69,7 +69,7 @@ const content: Record<
     sections: [
       [
         "On your device",
-        "Your bag, favorites, and last demo receipt are saved locally with AsyncStorage. No contact, street address, or card information is included in that saved receipt.",
+        "Your bag, favorites, demo order history, profile, explicitly saved addresses, searches, viewed products, reviews, preferences and support drafts are stored locally with AsyncStorage. No real card information is collected. These details are not synced to a server.",
       ],
       [
         "Checkout",

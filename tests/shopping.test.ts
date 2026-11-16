@@ -83,3 +83,119 @@ test("demo totals reconcile to cents and international rates differ", () => {
 test("an empty bag has no charge", () => {
   assert.equal(checkoutTotals(0, "express", "India", true).total, 0);
 });
+import {
+  hydrateCustomer,
+  validateProfile,
+  demoStock,
+} from "../src/data/customer";
+import { matchesDiscovery } from "../src/data/discovery";
+import { products } from "../src/data/catalog";
+test("customer hydration rejects corrupt addresses and falls back to a valid default", () => {
+  const address = {
+    ...blankAddress,
+    id: "home",
+    label: "Home",
+    firstName: "Demo",
+    lastName: "Shopper",
+    street: "123 Sample Lane",
+    city: "Los Angeles",
+    region: "CA",
+    postal: "90001",
+  };
+  const result = hydrateCustomer({
+    addresses: [address, { ...address, id: "bad", postal: "X" }],
+    defaultAddressId: "deleted",
+    viewed: [0, 0, 999, "1"],
+    reviews: [{ rating: 99 }],
+    preferences: { country: "Invalid" },
+  });
+  assert.equal(result.addresses.length, 1);
+  assert.equal(result.defaultAddressId, "home");
+  assert.deepEqual(result.viewed, [0]);
+  assert.equal(result.reviews.length, 0);
+  assert.equal(result.preferences.country, "United States");
+});
+test("local profile and preferences survive hydration without accepting invalid shapes", () => {
+  const result = hydrateCustomer({
+    profile: {
+      firstName: "Demo",
+      lastName: "Shopper",
+      email: "demo@example.com",
+      phone: "",
+    },
+    preferences: {
+      offers: true,
+      orderUpdates: false,
+      backInStock: true,
+      country: "India",
+    },
+    tickets: [
+      null,
+      { id: "one", topic: "Order help", message: "Sample draft" },
+    ],
+  });
+  assert.deepEqual(validateProfile(result.profile), {});
+  assert.equal(result.preferences.country, "India");
+  assert.equal(result.preferences.offers, true);
+  assert.equal(result.tickets.length, 1);
+  assert.ok(validateProfile({ ...result.profile, email: "invalid" }).email);
+  assert.deepEqual(hydrateCustomer(null).addresses, []);
+});
+test("discovery combines size, color, price and sample availability", () => {
+  assert.equal(
+    matchesDiscovery(products[0], {
+      size: "M",
+      color: "Pink Taffy",
+      under150: true,
+      inStock: true,
+    }),
+    true,
+  );
+  assert.equal(
+    matchesDiscovery(products[1], {
+      size: "XL",
+      color: "",
+      under150: false,
+      inStock: true,
+    }),
+    false,
+  );
+  assert.equal(
+    matchesDiscovery(products[0], {
+      size: "One Size",
+      color: "",
+      under150: false,
+      inStock: false,
+    }),
+    false,
+  );
+  assert.equal(
+    matchesDiscovery(products[1], {
+      size: "",
+      color: "",
+      under150: true,
+      inStock: false,
+    }),
+    false,
+  );
+});
+test("unavailable sample variants cannot enter the bag, including buy-again", () => {
+  assert.equal(demoStock(10), false);
+  assert.deepEqual(addItem([], 10, "One Size"), []);
+  assert.deepEqual(addItem([], 1, "XL"), []);
+  assert.equal(addItem([], 1, "M").length, 1);
+});
+
+import { isReceipt, exampleOrders } from "../src/data/orders";
+test("order hydration accepts legacy receipts and rejects malformed line items and totals", () => {
+  const sample = exampleOrders[0];
+  assert.equal(isReceipt(sample), true);
+  const { createdAt, ...legacy } = sample;
+  assert.equal(isReceipt(legacy), true);
+  assert.equal(
+    isReceipt({ ...sample, items: [{ id: 999, size: "M", quantity: 1 }] }),
+    false,
+  );
+  assert.equal(isReceipt({ ...sample, totals: { total: 12800 } }), false);
+  assert.equal(isReceipt({ ...sample, createdAt: "not-a-date" }), false);
+});

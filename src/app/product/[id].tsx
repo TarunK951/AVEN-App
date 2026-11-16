@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,9 @@ import { money } from "../../data/totals";
 import { useStore } from "../../store/store";
 import { Header, Button, Empty } from "../../ui/components";
 import { C, ui } from "../../ui/theme";
+import { useCustomer } from "../../store/customer";
+import { demoStock } from "../../data/customer";
+import { Row, Notice } from "../../ui/account";
 import ProductCard from "../../ui/ProductCard";
 export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,6 +34,10 @@ export default function ProductScreen() {
     [zoom, setZoom] = useState(false),
     [open, setOpen] = useState("Product details");
   const { add, toggleFavorite, favorites, ready } = useStore();
+  const { data: customer, update, viewProduct } = useCustomer();
+  useEffect(() => {
+    if (p) viewProduct(p.id);
+  }, [p?.id]);
   if (!p)
     return (
       <View testID="product-screen" style={ui.screen}>
@@ -118,7 +125,9 @@ export default function ProductScreen() {
               </Pressable>
             )}
           />
-          <Text style={s.new}>NEW ARRIVAL</Text>
+          <Text style={s.new}>
+            {demoStock(p.id) ? "NEW ARRIVAL" : "OUT OF STOCK · DEMO"}
+          </Text>
         </View>
         <View style={s.dots}>
           {photos.map((_, i) => (
@@ -217,6 +226,7 @@ export default function ProductScreen() {
               >
                 <Text style={[ui.chipText, size === s && ui.chipActiveText]}>
                   {s}
+                  {!demoStock(p.id, s) ? " *" : ""}
                 </Text>
               </Pressable>
             ))}
@@ -250,19 +260,52 @@ export default function ProductScreen() {
             </Text>
           </View>
           <Button
-            disabled={!size || !ready}
+            disabled={!size || !ready || !demoStock(p.id, size)}
             onPress={() => {
               add(p.id, size, quantity);
               router.navigate("/(tabs)/bag");
             }}
           >
-            {size
-              ? `Add to bag · ${money(p.price * 100 * quantity)}`
-              : "Select a size"}
+            {!demoStock(p.id, size)
+              ? "Unavailable in demo stock"
+              : size
+                ? `Add to bag · ${money(p.price * 100 * quantity)}`
+                : "Select a size"}
           </Button>
+          {!demoStock(p.id, size) && (
+            <Notice>
+              This variant is unavailable in the sample inventory. Choose
+              another size or save a stock alert below.
+            </Notice>
+          )}
+          <Row
+            title={
+              customer.alerts.includes(p.id)
+                ? "Stock alert saved · Remove"
+                : "Notify me about restocks"
+            }
+            subtitle="Local preference only · No messages are sent"
+            onPress={() =>
+              update((old) => ({
+                ...old,
+                alerts: old.alerts.includes(p.id)
+                  ? old.alerts.filter((x) => x !== p.id)
+                  : [...old.alerts, p.id],
+              }))
+            }
+          />
+          <Row
+            title="Reviews & ratings"
+            subtitle={`${customer.reviews.filter((r) => r.productId === p.id).length} local reviews · Share a first impression`}
+            onPress={() =>
+              router.push({ pathname: "/reviews/[id]", params: { id: p.id } })
+            }
+          />
           <View style={s.shipping}>
             <Truck size={19} color={C.ink} />
-            <Text style={{ fontSize: 11, lineHeight: 18, color: C.muted, flex: 1 }}>
+            <Text
+              style={{ fontSize: 11, lineHeight: 18, color: C.muted, flex: 1 }}
+            >
               Complimentary standard US shipping $75+{`\n`}A little comfort goes
               a long way.
             </Text>

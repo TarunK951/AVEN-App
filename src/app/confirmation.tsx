@@ -2,6 +2,7 @@ import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { Check, Truck, CreditCard } from "lucide-react-native";
+import { Row } from "../ui/account";
 import { Header, Empty, Button } from "../ui/components";
 import { useStore } from "../store/store";
 import { ui, C } from "../ui/theme";
@@ -148,6 +149,11 @@ export default function Confirmation() {
             charged.
           </Text>
         </View>
+        <Row
+          title="View My orders"
+          subtitle="Your demo receipt and tracking preview"
+          onPress={() => router.push("/account/orders")}
+        />
         <Button onPress={() => router.replace("/(tabs)/shop")}>
           Continue exploring
         </Button>

@@ -35,3 +35,18 @@ No APK was created. Native Android/iOS device behavior has not been verified. An
 - Repeated the local $128 demo order through confirmation; bag reset to zero. Restored the original single saved favorite after empty-state testing.
 - Final TypeScript, all 10 shopping tests, production web export and git whitespace check passed. Native-device behavior remains unverified. No APK was created or packaged.
 - Updated preview screenshots: ignored output/aven-mobile-audit.png and output/aven-colors-you.png.
+
+## Frontend account and shopping expansion — 2026-11-16
+
+Added local profile editing/validation; saved address add/edit/remove/undo/default selection; checkout autofill; persistent order history; receipt details; sample delivered/in-transit tracking; local cancellation, return and exchange requests; replacement-size selection; and buy-again links. Profile/account and order links are connected from You and confirmation.
+
+Also added size/color/price/sample-stock filters, unavailable variant protection, local reviews/ratings, restock preferences, recent searches, recently viewed products, browsing-based recommendations, local activity, support FAQs/drafts, AVEN Circle preview rewards, delivery-region estimates, illustrative currency conversion and a simulated payment-failure/retry path. A friendly route error screen offers retry. Privacy and README copy describe the local persistence model.
+
+Validation:
+- TypeScript passed and 15 tests passed, including customer hydration, default-address fallback, corrupt data, sample stock/filter combinations, legacy receipt migration and malformed receipt rejection.
+- Production web export passed. No Android/iOS binary or APK was built.
+- Browser checks at 390 x 844 and 320 x 760: profile required-field validation and saving; address creation/edit/removal/undo; profile and default-address autofill into checkout; a simulated payment decline followed by successful retry; order creation/history; cancellation; sample return and exchange with replacement size; FAQs/draft saving; preference switches; region/currency estimates; rewards joining; combined product filters; review saving; stock alerts; unavailable product disabled; recently viewed; local activity; and navigation back to account.
+- Saved address and newly created order survived reload. Tested account/address/order document widths matched their mobile viewports. Fixed empty-string JSX warnings encountered during testing.
+- Screenshots in ignored output/: aven-account.png, aven-addresses.png and aven-orders.png.
+
+All transactions, shipments, requests, loyalty points, reviews, alerts and support messages are local demonstrations. Currency estimates use fixed illustrative rates; catalog and checkout remain USD. No backend, authentication, live payment, carrier, notification service or analytics was connected. Native device/keyboard behavior and accessibility certification remain unverified. Reference photography still requires licensing/replacement before commercial use.

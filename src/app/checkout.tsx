@@ -32,6 +32,9 @@ import {
 import { Image } from "expo-image";
 import { Header, Button, Empty } from "../ui/components";
 import { ui, C } from "../ui/theme";
+import { demoStock } from "../data/customer";
+import { useCustomer } from "../store/customer";
+import { Row, Notice } from "../ui/account";
 import { useStore } from "../store/store";
 import { products } from "../data/catalog";
 import { productImage } from "../data/images";
@@ -188,11 +191,19 @@ function AddressFields({
 }
 export default function Checkout() {
   const store = useStore();
+  const { data: customer } = useCustomer();
+  const savedAddress = customer.addresses.find(
+    (a) => a.id === customer.defaultAddressId,
+  );
   const [step, setStep] = useState(1),
-    [address, setAddress] = useState<Address>({ ...blankAddress }),
+    [address, setAddress] = useState<Address>(
+      savedAddress
+        ? { ...savedAddress }
+        : { ...blankAddress, country: customer.preferences.country },
+    ),
     [billing, setBilling] = useState<Address>({ ...blankAddress }),
-    [email, setEmail] = useState(""),
-    [phone, setPhone] = useState(""),
+    [email, setEmail] = useState(customer.profile.email),
+    [phone, setPhone] = useState(customer.profile.phone),
     [errors, setErrors] = useState<Errors>({}),
     [shipping, setShipping] = useState<ShippingMethod>("standard"),
     [demoCard, setDemoCard] = useState(false),
@@ -201,10 +212,17 @@ export default function Checkout() {
     [promoText, setPromoText] = useState(""),
     [promoError, setPromoError] = useState(""),
     [summary, setSummary] = useState(false),
-    [posting, setPosting] = useState(false);
+    [posting, setPosting] = useState(false),
+    [simulateFailure, setSimulateFailure] = useState(false);
   const locked = useRef(false),
     scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   const insets = useSafeAreaInsets();
+  useEffect(() => {
+    if (savedAddress) {
+      setAddress({ ...savedAddress });
+      setErrors({});
+    }
+  }, [savedAddress]);
   const totals = checkoutTotals(
       store.subtotal,
       shipping,
@@ -234,7 +252,8 @@ export default function Checkout() {
   function updateAddress(next: Address, isBilling = false) {
     const previous = isBilling ? billing : address;
     (Object.keys(next) as (keyof Address)[]).forEach((key) => {
-      if (next[key] !== previous[key]) clearFieldError((isBilling ? "billing-" : "") + key);
+      if (next[key] !== previous[key])
+        clearFieldError((isBilling ? "billing-" : "") + key);
     });
     if (isBilling) setBilling(next);
     else setAddress(next);
@@ -286,6 +305,14 @@ export default function Checkout() {
       setStep(step + 1);
       return;
     }
+    if (simulateFailure) {
+      setSimulateFailure(false);
+      setErrors({
+        payment:
+          "Demo payment declined. Your bag is safe. Tap Place demo order again to retry.",
+      });
+      return;
+    }
     if (locked.current) return;
     locked.current = true;
     setPosting(true);
@@ -303,6 +330,18 @@ export default function Checkout() {
         <Empty
           title="Getting your bag ready…"
           body="A little comfort is on its way."
+        />
+      </View>
+    );
+  if (store.bag.some((i) => !demoStock(i.id, i.size)))
+    return (
+      <View style={ui.screen}>
+        <Header back title="Checkout" search={false} />
+        <Empty
+          title="A piece needs another look."
+          body="A variant in your bag is unavailable in the sample inventory. Remove it or choose another size before continuing."
+          button="Review your bag"
+          onPress={() => router.navigate("/(tabs)/bag")}
         />
       </View>
     );
@@ -600,17 +639,38 @@ export default function Checkout() {
             </Text>
             {step === 1 ? (
               <>
+                <Row
+                  title="Choose a saved address"
+                  subtitle={
+                    savedAddress
+                      ? `Default: ${savedAddress.label}`
+                      : "Add or select an address on this device"
+                  }
+                  onPress={() =>
+                    router.push({
+                      pathname: "/account/addresses",
+                      params: { select: "checkout" },
+                    })
+                  }
+                />
+                <View style={{ height: 20 }} />
                 <Field
                   label="Email address"
                   value={email}
-                  onChange={(value) => { setEmail(value); clearFieldError("email"); }}
+                  onChange={(value) => {
+                    setEmail(value);
+                    clearFieldError("email");
+                  }}
                   keyboardType="email-address"
                   error={errors.email}
                 />
                 <Field
                   label="Phone number"
                   value={phone}
-                  onChange={(value) => { setPhone(value); clearFieldError("phone"); }}
+                  onChange={(value) => {
+                    setPhone(value);
+                    clearFieldError("phone");
+                  }}
                   keyboardType="phone-pad"
                   optional
                   error={errors.phone}
@@ -701,7 +761,10 @@ export default function Checkout() {
                   accessibilityRole="radio"
                   accessibilityState={{ checked: demoCard }}
                   accessibilityLabel="Demo Visa"
-                  onPress={() => { setDemoCard(true); clearFieldError("payment"); }}
+                  onPress={() => {
+                    setDemoCard(true);
+                    clearFieldError("payment");
+                  }}
                   style={[
                     s.card,
                     demoCard && {
@@ -753,7 +816,12 @@ export default function Checkout() {
                   >
                     4242 4242 4242 4242
                   </Text>
-                  <View style={[ui.row, { marginTop: 20, flexWrap: "wrap", rowGap: 8 }]}>
+                  <View
+                    style={[
+                      ui.row,
+                      { marginTop: 20, flexWrap: "wrap", rowGap: 8 },
+                    ]}
+                  >
                     <Text style={[ui.small, { fontSize: 9 }]}>
                       EXPIRY 12/30
                     </Text>
@@ -761,6 +829,18 @@ export default function Checkout() {
                       FIXED TEST CARD · NO CHARGE
                     </Text>
                   </View>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="checkbox"
+                  accessibilityLabel="Simulate a payment failure"
+                  accessibilityState={{ checked: simulateFailure }}
+                  onPress={() => setSimulateFailure(!simulateFailure)}
+                  style={{ paddingVertical: 18 }}
+                >
+                  <Text style={ui.link}>
+                    {simulateFailure ? "Enabled: " : ""}Simulate a payment
+                    failure (demo)
+                  </Text>
                 </Pressable>
                 {errors.payment && (
                   <Text style={ui.error}>{errors.payment}</Text>
