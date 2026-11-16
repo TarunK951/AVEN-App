@@ -32,7 +32,7 @@ import {
 import { Image } from "expo-image";
 import { Header, Button, Empty } from "../ui/components";
 import { ui, C } from "../ui/theme";
-import { demoStock } from "../data/customer";
+import { isAvailable } from "../data/customer";
 import { useCustomer } from "../store/customer";
 import { Row, Notice } from "../ui/account";
 import { useStore } from "../store/store";
@@ -206,14 +206,13 @@ export default function Checkout() {
     [phone, setPhone] = useState(customer.profile.phone),
     [errors, setErrors] = useState<Errors>({}),
     [shipping, setShipping] = useState<ShippingMethod>("standard"),
-    [demoCard, setDemoCard] = useState(false),
+    [payOnDelivery, setPayOnDelivery] = useState(false),
     [sameBilling, setSameBilling] = useState(true),
     [promo, setPromo] = useState(false),
     [promoText, setPromoText] = useState(""),
     [promoError, setPromoError] = useState(""),
     [summary, setSummary] = useState(false),
-    [posting, setPosting] = useState(false),
-    [simulateFailure, setSimulateFailure] = useState(false);
+    [posting, setPosting] = useState(false);
   const locked = useRef(false),
     scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   const insets = useSafeAreaInsets();
@@ -291,7 +290,8 @@ export default function Checkout() {
         validation.phone = "Enter a valid phone number or leave it blank.";
     }
     if (step === 3) {
-      if (!demoCard) validation.payment = "Select the demo card to continue.";
+      if (!payOnDelivery)
+        validation.payment = "Choose a payment method to continue.";
       if (!sameBilling)
         validation = { ...validation, ...validateAddress(billing, "billing-") };
     }
@@ -303,14 +303,6 @@ export default function Checkout() {
     setErrors({});
     if (step < 3) {
       setStep(step + 1);
-      return;
-    }
-    if (simulateFailure) {
-      setSimulateFailure(false);
-      setErrors({
-        payment:
-          "Demo payment declined. Your bag is safe. Tap Place demo order again to retry.",
-      });
       return;
     }
     if (locked.current) return;
@@ -333,13 +325,13 @@ export default function Checkout() {
         />
       </View>
     );
-  if (store.bag.some((i) => !demoStock(i.id, i.size)))
+  if (store.bag.some((i) => !isAvailable(i.id, i.size)))
     return (
       <View style={ui.screen}>
         <Header back title="Checkout" search={false} />
         <Empty
           title="A piece needs another look."
-          body="A variant in your bag is unavailable in the sample inventory. Remove it or choose another size before continuing."
+          body="A variant in your bag is unavailable currently. Remove it or choose another size before continuing."
           button="Review your bag"
           onPress={() => router.navigate("/(tabs)/bag")}
         />
@@ -358,7 +350,10 @@ export default function Checkout() {
   if (posting)
     return (
       <View testID="checkout-screen" style={ui.screen}>
-        <Empty title="Finishing your demo…" body="No payment is being taken." />
+        <Empty
+          title="Saving your order…"
+          body="A little comfort is on its way."
+        />
       </View>
     );
   return (
@@ -476,8 +471,7 @@ export default function Checkout() {
                           setPromo(true);
                           setPromoError("");
                           setPromoText("");
-                        } else
-                          setPromoError("Try AVEN10 for 10% off in this demo.");
+                        } else setPromoError("Try AVEN10 for 10% off.");
                       }}
                       style={[ui.chip, { justifyContent: "center" }]}
                     >
@@ -505,7 +499,7 @@ export default function Checkout() {
                   "Shipping",
                   totals.shipping ? money(totals.shipping) : "Complimentary",
                 ],
-                ["Tax (demo)", money(0)],
+                ["Tax", money(0)],
               ].map(([label, value]) => (
                 <View key={label} style={[ui.row, { marginBottom: 14 }]}>
                   <Text style={ui.small}>{label}</Text>
@@ -584,7 +578,7 @@ export default function Checkout() {
             >
               <LockKeyhole size={12} color={C.muted} />
               <Text style={{ fontSize: 9, color: C.muted }}>
-                Demo only · No real payment or order is processed.
+                Your everyday essentials, almost home.
               </Text>
             </View>
             {step > 1 && (
@@ -635,7 +629,7 @@ export default function Checkout() {
                 ? "Where should your next favorites feel at home?"
                 : step === 2
                   ? "Choose the delivery that works for you."
-                  : "Preview payment with a fixed demo card. No real card details needed."}
+                  : "Choose how you’d like to pay."}
             </Text>
             {step === 1 ? (
               <>
@@ -684,8 +678,7 @@ export default function Checkout() {
                   errors={errors}
                 />
                 <Text style={[ui.small, { fontSize: 9 }]}>
-                  Contact and address details stay in this screen and aren’t
-                  saved with the receipt.
+                  Choose a saved address or enter the details for this delivery.
                 </Text>
               </>
             ) : step === 2 ? (
@@ -749,8 +742,7 @@ export default function Checkout() {
                   </Pressable>
                 ))}
                 <Text style={[ui.small, { fontSize: 9, marginTop: 8 }]}>
-                  Delivery windows and fees are demo examples. Free standard
-                  shipping on{" "}
+                  Delivery times are estimates. Free standard shipping on{" "}
                   {address.country === "United States" ? "$75" : "$150"}+ after
                   discounts.
                 </Text>
@@ -759,92 +751,42 @@ export default function Checkout() {
               <>
                 <Pressable
                   accessibilityRole="radio"
-                  accessibilityState={{ checked: demoCard }}
-                  accessibilityLabel="Demo Visa"
+                  accessibilityLabel="Pay on delivery"
+                  accessibilityState={{ checked: payOnDelivery }}
                   onPress={() => {
-                    setDemoCard(true);
+                    setPayOnDelivery(true);
                     clearFieldError("payment");
                   }}
                   style={[
                     s.card,
-                    demoCard && {
-                      borderColor: "#6d865c",
-                      backgroundColor: "#f6f8f1",
+                    {
+                      borderColor: payOnDelivery ? C.ink : C.line,
+                      backgroundColor: payOnDelivery ? C.cream : C.white,
                     },
                   ]}
                 >
                   <View style={ui.row}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 12,
-                      }}
-                    >
-                      <View
-                        style={[
-                          s.radio,
-                          demoCard && {
-                            backgroundColor: C.ink,
-                            borderColor: C.ink,
-                          },
-                        ]}
-                      />
-                      <CreditCard size={23} color={C.ink} />
-                      <Text style={{ fontSize: 13, color: C.ink }}>
-                        Demo Visa
+                    <Truck size={24} color={C.ink} />
+                    <View style={{ flex: 1, gap: 7 }}>
+                      <Text style={{ fontSize: 14, color: C.ink }}>
+                        Pay on delivery
+                      </Text>
+                      <Text style={ui.small}>
+                        Keep payment simple. Pay when your order arrives.
                       </Text>
                     </View>
-                    <Text
-                      style={{
-                        fontStyle: "italic",
-                        fontWeight: "700",
-                        fontSize: 15,
-                        color: C.ink,
-                      }}
-                    >
-                      VISA
-                    </Text>
-                  </View>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      color: C.ink,
-                      letterSpacing: 1,
-                      marginTop: 27,
-                    }}
-                  >
-                    4242 4242 4242 4242
-                  </Text>
-                  <View
-                    style={[
-                      ui.row,
-                      { marginTop: 20, flexWrap: "wrap", rowGap: 8 },
-                    ]}
-                  >
-                    <Text style={[ui.small, { fontSize: 9 }]}>
-                      EXPIRY 12/30
-                    </Text>
-                    <Text style={[ui.small, { fontSize: 9 }]}>
-                      FIXED TEST CARD · NO CHARGE
-                    </Text>
+                    <View
+                      style={[
+                        s.radio,
+                        payOnDelivery && {
+                          backgroundColor: C.ink,
+                          borderColor: C.ink,
+                        },
+                      ]}
+                    />
                   </View>
                 </Pressable>
-                <Pressable
-                  accessibilityRole="checkbox"
-                  accessibilityLabel="Simulate a payment failure"
-                  accessibilityState={{ checked: simulateFailure }}
-                  onPress={() => setSimulateFailure(!simulateFailure)}
-                  style={{ paddingVertical: 18 }}
-                >
-                  <Text style={ui.link}>
-                    {simulateFailure ? "Enabled: " : ""}Simulate a payment
-                    failure (demo)
-                  </Text>
-                </Pressable>
-                {errors.payment && (
-                  <Text style={ui.error}>{errors.payment}</Text>
-                )}
+                {errors.card && <Text style={ui.error}>{errors.card}</Text>}
                 <Pressable
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: sameBilling }}
@@ -878,9 +820,8 @@ export default function Checkout() {
                   />
                 )}
                 <Text style={[ui.small, { fontSize: 10, lineHeight: 19 }]}>
-                  Review your items before finishing. Placing a demo order
-                  clears your bag and opens a sample confirmation. Nothing is
-                  charged or shipped.
+                  Review your items before finishing. Check your address and
+                  delivery method before placing your order.
                 </Text>
               </>
             )}
@@ -900,7 +841,7 @@ export default function Checkout() {
               ? "Continue to shipping"
               : step === 2
                 ? "Continue to payment"
-                : `Place demo order · ${money(totals.total)}`}
+                : `Place order · ${money(totals.total)}`}
           </Button>
         </View>
       </KeyboardAvoidingView>

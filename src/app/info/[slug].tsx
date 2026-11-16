@@ -1,7 +1,7 @@
 import { ScrollView, View, Text } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Header, Button } from "../../ui/components";
-import { ui } from "../../ui/theme";
+import { C, ui } from "../../ui/theme";
 const content: Record<
   string,
   { title: string; intro: string; sections: [string, string][] }
@@ -12,99 +12,113 @@ const content: Record<
     sections: [
       [
         "A fresh perspective",
-        "We believe the best things happen when you get moving. AVEN brings together versatile silhouettes, thoughtful details, and everyday comfort.",
+        "AVEN is a collection of considered essentials. Soft textures, clean silhouettes and quiet details make room for the way you move.",
       ],
       [
-        "From outside to everyday",
-        "From morning movement to the long way home, make room for a life well lived.",
+        "Less, but considered.",
+        "Five pieces, thoughtfully brought together. An easy layer, a favorite fit, a little room for the things you carry.",
       ],
     ],
   },
   "shipping-returns": {
     title: "A little more clarity.",
-    intro: "Shipping and returns, made simple.",
+    intro: "The details for your everyday arrivals.",
     sections: [
       [
-        "Shipping preview",
-        "Standard US shipping is free on $75+ after discounts; otherwise $8. Express is $18. International standard is $15, free on $150+ after discounts, and express is $28. These are demo rates in USD.",
+        "Shipping",
+        "Standard US shipping is complimentary on orders $75+ after discounts; otherwise $8. Express shipping is $18. International standard is $15, complimentary on orders $150+; express is $28. All prices are in USD.",
       ],
       [
-        "Returns",
-        "A final returns policy will be published before launch. This app does not accept real orders or payments.",
+        "Delivery",
+        "Choose your delivery method at checkout. Standard delivery is estimated at 4–7 business days and express at 2–3 business days.",
+      ],
+      [
+        "Returns & exchanges",
+        "Visit My Orders, select your order and choose Request return or Request exchange. Save your reason and preferred replacement size, or visit Help & support for more assistance.",
       ],
     ],
   },
   "size-guide": {
     title: "Find your fit.",
-    intro: "A starting point for everyday comfort.",
+    intro: "A little guidance. A little more comfort.",
     sections: [
-      ["Women", "XS: US 0–2 · S: 4–6 · M: 8–10 · L: 12–14 · XL: 16."],
+      [
+        "Women",
+        "XS: US 0–2 · S: 4–6 · M: 8–10 · L: 12–14 · XL: 16. Coast Fleece has a relaxed fit; Form Leggings fit close to the body.",
+      ],
       [
         "Men",
-        "Chest: XS 33–35 in · S 35–37 in · M 38–40 in · L 41–43 in · XL 44–46 in.",
+        "Chest: XS 33–35 in · S 35–37 in · M 38–40 in · L 41–43 in · XL 44–46 in. Check each product’s fit notes before choosing your size.",
       ],
       [
         "Accessories",
-        "Accessories in this collection are One Size. Preview size recommendations should be confirmed against final garment measurements.",
+        "The Everyday Canvas Tote is available in One Size. Broad handles and a softly structured body make it easy to carry.",
       ],
     ],
   },
   about: {
-    title: "A fresh perspective.",
-    intro: "AVEN · Independent shopping preview",
+    title: "Your everyday. Reconsidered.",
+    intro: "AVEN · A fresh perspective",
     sections: [
       [
-        "Built for mobile",
-        "A React Native app with native navigation, a local catalog, persistent favorites and bag storage, and a complete demo checkout.",
+        "The collection",
+        "Coast Fleece. Ridge Trail Pant. Form Legging. Field Overshirt. Everyday Tote. Five original pieces in a palette of oat, olive, graphite, sage and sand.",
       ],
       [
-        "About this preview",
-        "AVEN is an independent design project inspired by Vuori and is not affiliated with Vuori. Reference photography must be licensed or replaced before commercial publication. No live inventory, user accounts, charges, or shipments are connected.",
+        "Our point of view",
+        "Thoughtful texture. Easy shape. A quieter kind of style. Find comfort in the pieces you reach for again and again.",
       ],
     ],
   },
   privacy: {
     title: "Clear by design.",
-    intro: "Your privacy, in a few words.",
+    intro: "Your details, considered.",
     sections: [
       [
-        "On your device",
-        "Your bag, favorites, demo order history, profile, explicitly saved addresses, searches, viewed products, reviews, preferences and support drafts are stored locally with AsyncStorage. No real card information is collected. These details are not synced to a server.",
+        "Your information",
+        "Your profile, saved addresses, bag, favorites and order details are stored on this device. Reviews, preferences and browsing history are also saved here.",
       ],
       [
-        "Checkout",
-        "Contact and address entries stay only in the checkout screen’s memory. Only a fixed demo card is available. No payment processor, analytics, or order API receives these details.",
+        "Your choices",
+        "You can edit your profile, remove saved addresses, manage alerts and clear recent browsing from your account.",
       ],
       [
-        "Remove saved data",
-        "Clear this app’s storage or uninstall it to remove the saved bag, favorites, and sample receipt.",
+        "Payments",
+        "Pay on delivery is available at checkout. This app does not collect card numbers.",
+      ],
+      [
+        "Storage",
+        "Clear the app’s storage to remove its saved information from this device.",
       ],
     ],
   },
 };
 export default function Info() {
-  const { slug } = useLocalSearchParams<{ slug: string }>();
-  const page = content[slug] ?? content.about;
+  const { slug } = useLocalSearchParams<{ slug: string }>(),
+    page = content[slug] || content.about;
   return (
     <View testID="info-screen" style={ui.screen}>
       <Header back />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 25, paddingBottom: 45 }}
+        contentContainerStyle={{
+          padding: 22,
+          paddingTop: 32,
+          paddingBottom: 40,
+          width: "100%",
+          maxWidth: 680,
+          alignSelf: "center",
+        }}
       >
-        <Text style={[ui.eyebrow, { marginTop: 20 }]}>
-          AVEN · A FRESH PERSPECTIVE
-        </Text>
-        <Text style={[ui.title, { marginTop: 22 }]}>{page.title}</Text>
-        <Text style={[ui.body, { marginTop: 18, marginBottom: 35 }]}>
+        <Text style={ui.eyebrow}>AVEN · A FRESH PERSPECTIVE</Text>
+        <Text style={[ui.title, { marginTop: 18 }]}>{page.title}</Text>
+        <Text style={[ui.body, { marginTop: 16, marginBottom: 32 }]}>
           {page.intro}
         </Text>
         {page.sections.map(([title, body]) => (
           <View key={title} style={{ marginBottom: 30 }}>
-            <Text style={[ui.h2, { fontSize: 23, marginBottom: 12 }]}>
-              {title}
-            </Text>
-            <Text style={ui.body}>{body}</Text>
+            <Text style={ui.h2}>{title}</Text>
+            <Text style={[ui.body, { marginTop: 13 }]}>{body}</Text>
           </View>
         ))}
         <Button onPress={() => router.navigate("/(tabs)/shop")}>

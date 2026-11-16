@@ -61,12 +61,12 @@ export default function You() {
                 ? `Hello, ${data.profile.firstName}`
                 : "Your account & profile"
             }
-            subtitle="A local profile, made yours"
+            subtitle="Your details, made yours"
             onPress={() => router.push("/account")}
           />
           <Row
             title="My orders"
-            subtitle="Demo purchases, tracking & returns"
+            subtitle="Purchases, tracking & returns"
             onPress={() => router.push("/account/orders")}
           />
           <Row
@@ -81,7 +81,7 @@ export default function You() {
           />
           <Row
             title="AVEN Circle"
-            subtitle="Preview rewards for your everyday"
+            subtitle="Rewards for your everyday"
             onPress={() => router.push("/account/rewards")}
           />
           <Row
@@ -91,7 +91,7 @@ export default function You() {
           />
           <Row
             title="Help & support"
-            subtitle="FAQs and support drafts"
+            subtitle="Answers and support"
             onPress={() => router.push("/account/support")}
           />
         </View>

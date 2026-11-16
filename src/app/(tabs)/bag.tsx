@@ -32,7 +32,9 @@ export default function Bag() {
           >
             <View style={s.shipping}>
               <Truck size={16} color={C.ink} />
-              <Text style={{ fontSize: 11, lineHeight: 17, color: C.ink, flex: 1 }}>
+              <Text
+                style={{ fontSize: 11, lineHeight: 17, color: C.ink, flex: 1 }}
+              >
                 {subtotal >= 7500
                   ? "Your bag qualifies for free standard shipping."
                   : `You’re ${money(7500 - subtotal)} away from free shipping.`}
@@ -119,7 +121,7 @@ export default function Bag() {
               </Text>
             </View>
             <Text style={[ui.small, { fontSize: 10 }]}>
-              Shipping and demo tax calculated at checkout.
+              Shipping calculated at checkout.
             </Text>
             <Button onPress={() => router.push("/checkout")}>
               Continue to checkout

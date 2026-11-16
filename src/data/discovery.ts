@@ -1,5 +1,5 @@
 import { type Product, sizesFor } from "./catalog";
-import { demoStock } from "./customer";
+import { isAvailable } from "./customer";
 export type DiscoveryFilters = {
   size: string;
   color: string;
@@ -11,6 +11,6 @@ export function matchesDiscovery(p: Product, f: DiscoveryFilters) {
     (!f.size || sizesFor(p).includes(f.size)) &&
     (!f.color || p.color === f.color) &&
     (!f.under150 || p.price <= 150) &&
-    (!f.inStock || demoStock(p.id, f.size || undefined))
+    (!f.inStock || isAvailable(p.id, f.size || undefined))
   );
 }

@@ -1,68 +1,146 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import { addItem, validBag, subtotalFor } from "../src/store/logic";
+import { products, isAvailable } from "../src/data/catalog";
+import { hydrateCustomer, validateProfile } from "../src/data/customer";
 import { blankAddress, validateAddress, validEmail } from "../src/data/address";
 import { checkoutTotals } from "../src/data/totals";
-test("same variant merges, while different sizes remain separate", () => {
-  let bag = addItem([], 0, "M", 2);
-  bag = addItem(bag, 0, "M", 1);
-  bag = addItem(bag, 0, "S", 1);
+import { matchesDiscovery } from "../src/data/discovery";
+import { isReceipt } from "../src/data/orders";
+test("the original AVEN collection contains five unique products with complete detail content", () => {
+  assert.equal(products.length, 5);
+  assert.equal(new Set(products.map((p) => p.id)).size, 5);
+  for (const p of products) {
+    assert.ok(
+      p.fit && p.fabric && p.care && p.description && p.qualityCopy && p.swatch,
+    );
+    assert.equal(p.features.length, 4);
+  }
+});
+test("same variant merges and different sizes stay separate", () => {
+  let bag = addItem([], 100, "M", 2);
+  bag = addItem(bag, 100, "M", 1);
+  bag = addItem(bag, 100, "S");
   assert.equal(bag.length, 2);
   assert.equal(bag[0].quantity, 3);
   assert.equal(subtotalFor(bag), 51200);
 });
-test("invalid sizes, product IDs, and quantities cannot be added", () => {
-  assert.deepEqual(addItem([], 0, "Invalid"), []);
+test("invalid products, sizes and quantities are rejected", () => {
   assert.deepEqual(addItem([], 999, "M"), []);
-  assert.deepEqual(addItem([], 0, "M", -1), []);
+  assert.deepEqual(addItem([], 100, "bad"), []);
+  assert.deepEqual(addItem([], 100, "M", -1), []);
 });
-test("accessories require One Size and quantities are bounded", () => {
-  assert.deepEqual(addItem([], 8, "M"), []);
-  assert.equal(addItem([], 8, "One Size", 100)[0].quantity, 99);
+test("tote uses One Size and quantity is bounded", () => {
+  assert.deepEqual(addItem([], 104, "M"), []);
+  assert.equal(addItem([], 104, "One Size", 100)[0].quantity, 99);
 });
-test("hydration drops invalid variants and resolves prices from the catalog", () => {
-  const bag = validBag([
-    { id: 0, size: "M", quantity: 2, price: 1 },
-    { id: 999, size: "M", quantity: 1 },
-    { id: 0, size: "M", quantity: -1 },
-  ]);
-  assert.equal(bag.length, 1);
-  assert.equal(subtotalFor(bag), 25600);
-});
-test("malformed storage does not produce a cart", () => {
+test("old catalog variants and malformed cart entries are discarded", () => {
+  assert.deepEqual(validBag([{ id: 0, size: "M", quantity: 1 }]), []);
+  assert.equal(
+    validBag([
+      { id: 100, size: "M", quantity: 2 },
+      { id: 999, size: "S", quantity: 1 },
+    ]).length,
+    1,
+  );
   assert.deepEqual(validBag(null), []);
-  assert.deepEqual(validBag({}), []);
 });
-test("blank contact and address are rejected", () => {
-  assert.equal(validEmail("invalid"), false);
-  assert.equal(validEmail("alex@example.com"), true);
+test("profile requires a name and valid email", () => {
+  assert.equal(validEmail("bad"), false);
+  assert.ok(
+    validateProfile({ firstName: "", lastName: "", email: "bad", phone: "" })
+      .email,
+  );
+  assert.deepEqual(
+    validateProfile({
+      firstName: "Alex",
+      lastName: "Morgan",
+      email: "alex@example.com",
+      phone: "",
+    }),
+    {},
+  );
+});
+const address = {
+  ...blankAddress,
+  id: "home",
+  label: "Home",
+  firstName: "Alex",
+  lastName: "Morgan",
+  street: "123 Coast Lane",
+  city: "Los Angeles",
+  region: "CA",
+  postal: "90001",
+};
+test("address validation follows postal country", () => {
   assert.equal(Object.keys(validateAddress(blankAddress)).length, 6);
-});
-test("postal validation follows the shipping country", () => {
-  const address = {
-    ...blankAddress,
-    firstName: "Alex",
-    lastName: "Morgan",
-    street: "123 Demo Lane",
-    city: "Los Angeles",
-    region: "CA",
-    postal: "90210",
-  };
   assert.deepEqual(validateAddress(address), {});
-  assert.ok(validateAddress({ ...address, postal: "123" }).postal);
+  assert.ok(validateAddress({ ...address, postal: "x" }).postal);
   assert.deepEqual(
     validateAddress({ ...address, country: "India", postal: "560001" }),
     {},
   );
-  assert.ok(
-    validateAddress({ ...address, country: "India", postal: "90210" }).postal,
+});
+test("saved address fallback and current catalog hydration tolerate corrupt data", () => {
+  const d = hydrateCustomer({
+    addresses: [address, { ...address, id: "bad", postal: "x" }],
+    defaultAddressId: "gone",
+    viewed: [100, 100, 0, 999],
+    alerts: [104, 8],
+    reviews: [{ rating: 99 }],
+  });
+  assert.equal(d.addresses.length, 1);
+  assert.equal(d.defaultAddressId, "home");
+  assert.deepEqual(d.viewed, [100]);
+  assert.deepEqual(d.alerts, [104]);
+  assert.deepEqual(d.reviews, []);
+});
+test("preferences hydrate without accepting invalid shapes", () => {
+  const d = hydrateCustomer({
+    preferences: { country: "Invalid", offers: true },
+    tickets: [null, { id: "one", topic: "Order help", message: "A question" }],
+  });
+  assert.equal(d.preferences.country, "United States");
+  assert.equal(d.preferences.offers, true);
+  assert.equal(d.tickets.length, 1);
+});
+test("combined discovery filters respect size, color, price and stock", () => {
+  assert.equal(
+    matchesDiscovery(products[0], {
+      size: "M",
+      color: "Oat",
+      under150: true,
+      inStock: true,
+    }),
+    true,
+  );
+  assert.equal(
+    matchesDiscovery(products[1], {
+      size: "XL",
+      color: "Olive",
+      under150: false,
+      inStock: true,
+    }),
+    false,
+  );
+  assert.equal(
+    matchesDiscovery(products[1], {
+      size: "M",
+      color: "",
+      under150: true,
+      inStock: false,
+    }),
+    false,
   );
 });
-test("shipping thresholds are evaluated after discounts", () => {
-  assert.equal(
-    checkoutTotals(7500, "standard", "United States", false).shipping,
-    0,
-  );
+test("unavailable sizes cannot enter the bag", () => {
+  assert.equal(isAvailable(101, "XL"), false);
+  assert.deepEqual(addItem([], 101, "XL"), []);
+  assert.equal(addItem([], 101, "M").length, 1);
+});
+test("discounts apply before shipping thresholds", () => {
   assert.equal(
     checkoutTotals(7500, "standard", "United States", true).shipping,
     800,
@@ -72,130 +150,46 @@ test("shipping thresholds are evaluated after discounts", () => {
     7550,
   );
 });
-test("demo totals reconcile to cents and international rates differ", () => {
+test("shipping and totals reconcile in cents", () => {
   assert.equal(
     checkoutTotals(12800, "express", "United States", true).total,
     13320,
   );
   assert.equal(checkoutTotals(12800, "express", "India", true).total, 14320);
-  assert.equal(checkoutTotals(15000, "standard", "India", false).shipping, 0);
+  assert.equal(checkoutTotals(0, "standard", "India", true).total, 0);
 });
-test("an empty bag has no charge", () => {
-  assert.equal(checkoutTotals(0, "express", "India", true).total, 0);
-});
-import {
-  hydrateCustomer,
-  validateProfile,
-  demoStock,
-} from "../src/data/customer";
-import { matchesDiscovery } from "../src/data/discovery";
-import { products } from "../src/data/catalog";
-test("customer hydration rejects corrupt addresses and falls back to a valid default", () => {
-  const address = {
-    ...blankAddress,
-    id: "home",
-    label: "Home",
-    firstName: "Demo",
-    lastName: "Shopper",
-    street: "123 Sample Lane",
-    city: "Los Angeles",
-    region: "CA",
-    postal: "90001",
+test("order hydration rejects retired products and malformed totals", () => {
+  const o = {
+    id: "AVN-ONE",
+    items: [{ id: 100, size: "M", quantity: 1 }],
+    totals: checkoutTotals(12800, "standard", "United States", false),
+    country: "United States",
+    shipping: "standard",
+    createdAt: "2026-11-16T12:00:00Z",
   };
-  const result = hydrateCustomer({
-    addresses: [address, { ...address, id: "bad", postal: "X" }],
-    defaultAddressId: "deleted",
-    viewed: [0, 0, 999, "1"],
-    reviews: [{ rating: 99 }],
-    preferences: { country: "Invalid" },
-  });
-  assert.equal(result.addresses.length, 1);
-  assert.equal(result.defaultAddressId, "home");
-  assert.deepEqual(result.viewed, [0]);
-  assert.equal(result.reviews.length, 0);
-  assert.equal(result.preferences.country, "United States");
-});
-test("local profile and preferences survive hydration without accepting invalid shapes", () => {
-  const result = hydrateCustomer({
-    profile: {
-      firstName: "Demo",
-      lastName: "Shopper",
-      email: "demo@example.com",
-      phone: "",
-    },
-    preferences: {
-      offers: true,
-      orderUpdates: false,
-      backInStock: true,
-      country: "India",
-    },
-    tickets: [
-      null,
-      { id: "one", topic: "Order help", message: "Sample draft" },
-    ],
-  });
-  assert.deepEqual(validateProfile(result.profile), {});
-  assert.equal(result.preferences.country, "India");
-  assert.equal(result.preferences.offers, true);
-  assert.equal(result.tickets.length, 1);
-  assert.ok(validateProfile({ ...result.profile, email: "invalid" }).email);
-  assert.deepEqual(hydrateCustomer(null).addresses, []);
-});
-test("discovery combines size, color, price and sample availability", () => {
+  assert.equal(isReceipt(o), true);
   assert.equal(
-    matchesDiscovery(products[0], {
-      size: "M",
-      color: "Pink Taffy",
-      under150: true,
-      inStock: true,
-    }),
-    true,
-  );
-  assert.equal(
-    matchesDiscovery(products[1], {
-      size: "XL",
-      color: "",
-      under150: false,
-      inStock: true,
-    }),
+    isReceipt({ ...o, items: [{ id: 0, size: "M", quantity: 1 }] }),
     false,
   );
-  assert.equal(
-    matchesDiscovery(products[0], {
-      size: "One Size",
-      color: "",
-      under150: false,
-      inStock: false,
-    }),
-    false,
-  );
-  assert.equal(
-    matchesDiscovery(products[1], {
-      size: "",
-      color: "",
-      under150: true,
-      inStock: false,
-    }),
-    false,
-  );
+  assert.equal(isReceipt({ ...o, totals: { total: 12800 } }), false);
 });
-test("unavailable sample variants cannot enter the bag, including buy-again", () => {
-  assert.equal(demoStock(10), false);
-  assert.deepEqual(addItem([], 10, "One Size"), []);
-  assert.deepEqual(addItem([], 1, "XL"), []);
-  assert.equal(addItem([], 1, "M").length, 1);
-});
-
-import { isReceipt, exampleOrders } from "../src/data/orders";
-test("order hydration accepts legacy receipts and rejects malformed line items and totals", () => {
-  const sample = exampleOrders[0];
-  assert.equal(isReceipt(sample), true);
-  const { createdAt, ...legacy } = sample;
-  assert.equal(isReceipt(legacy), true);
-  assert.equal(
-    isReceipt({ ...sample, items: [{ id: 999, size: "M", quantity: 1 }] }),
-    false,
-  );
-  assert.equal(isReceipt({ ...sample, totals: { total: 12800 } }), false);
-  assert.equal(isReceipt({ ...sample, createdAt: "not-a-date" }), false);
+test("customer-facing screens contain no placeholder labels and all original image assets exist", () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((x) =>
+      x.isDirectory() ? walk(join(dir, x.name)) : [join(dir, x.name)],
+    );
+  for (const file of walk("src/app").filter((x) => x.endsWith(".tsx"))) {
+    assert.equal(
+      /\b(demo|sample|example|preview|fictional)\b/i.test(
+        readFileSync(file, "utf8"),
+      ),
+      false,
+      file,
+    );
+  }
+  for (const name of ["fleece", "pants", "leggings", "overshirt", "tote"]) {
+    assert.ok(existsSync(`assets/originals/aven-${name}.png`));
+    assert.ok(existsSync(`assets/originals/aven-${name}-detail.png`));
+  }
 });

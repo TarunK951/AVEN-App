@@ -1,4 +1,4 @@
-import { demoStock } from "../data/customer";
+import { isAvailable } from "../data/customer";
 import { products, sizesFor } from "../data/catalog";
 export type BagItem = { id: number; size: string; quantity: number };
 export function validBag(value: unknown): BagItem[] {
@@ -32,7 +32,7 @@ export function addItem(
   if (
     !p ||
     !sizesFor(p).includes(size) ||
-    !demoStock(id, size) ||
+    !isAvailable(id, size) ||
     !Number.isInteger(quantity) ||
     quantity < 1
   )

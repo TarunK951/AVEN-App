@@ -38,7 +38,7 @@ export function Page({
       >
         <Text style={ui.eyebrow}>{eyebrow}</Text>
         <Text style={[ui.title, { marginTop: 14 }]}>{title}</Text>
-        {intro && <Text style={[ui.body, { marginTop: 12 }]}>{intro}</Text>}
+        {!!intro && <Text style={[ui.body, { marginTop: 12 }]}>{intro}</Text>}
         {storageError && (
           <Text style={ui.error}>
             Device storage is unavailable. Changes last for this session only.

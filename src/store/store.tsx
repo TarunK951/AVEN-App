@@ -1,4 +1,4 @@
-import { demoStock } from "../data/customer";
+import { isAvailable } from "../data/customer";
 import { isReceipt } from "../data/orders";
 import {
   createContext,
@@ -118,7 +118,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         old.includes(id) ? old.filter((x) => x !== id) : [...old, id],
       ),
     complete: (shipping, country, promo) => {
-      if (!bag.length || bag.some((i) => !demoStock(i.id, i.size))) return null;
+      if (!bag.length || bag.some((i) => !isAvailable(i.id, i.size)))
+        return null;
       const next: Receipt = {
         id: "AVN-" + Date.now().toString(36).toUpperCase(),
         createdAt: new Date().toISOString(),

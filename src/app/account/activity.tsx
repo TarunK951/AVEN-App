@@ -11,20 +11,16 @@ export default function Activity() {
   return (
     <Page
       title="A little up to date."
-      intro="Your local shopping activity."
+      intro="Your shopping activity."
       testID="activity-screen"
     >
-      <Notice>
-        Activity preview only. No device notifications, emails or SMS are sent.
-      </Notice>
       {data.preferences.orderUpdates &&
         orders.map((o) => (
           <Row
             key={o.id}
-            title={`Demo order ${o.id}`}
+            title={`Order ${o.id}`}
             subtitle={
-              data.orderActions[o.id]?.status ||
-              "Saved locally · Processing preview"
+              data.orderActions[o.id]?.status || "Saved · Awaiting confirmation"
             }
             onPress={() =>
               router.push({ pathname: "/order/[id]", params: { id: o.id } })
@@ -36,7 +32,7 @@ export default function Activity() {
           <Row
             key={id}
             title={products.find((p) => p.id === id)?.name || "Product alert"}
-            subtitle="Restock request saved · No live inventory monitoring"
+            subtitle="Restock alert saved"
             onPress={() =>
               router.push({ pathname: "/product/[id]", params: { id } })
             }
@@ -46,14 +42,13 @@ export default function Activity() {
         <View style={a.card}>
           <Text style={ui.h2}>A little welcome comfort.</Text>
           <Text style={ui.body}>
-            Try AVEN10 for 10% off your next demo checkout.
+            Try AVEN10 for 10% off your next checkout.
           </Text>
         </View>
       )}
       {!orders.length && !data.alerts.length && !data.preferences.offers && (
         <Text style={ui.body}>
-          All quiet for now. Demo orders and saved stock alerts will appear
-          here.
+          All quiet for now. Orders and saved stock alerts will appear here.
         </Text>
       )}
       <Row

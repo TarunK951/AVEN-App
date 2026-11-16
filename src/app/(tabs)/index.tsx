@@ -36,7 +36,7 @@ export default function Home() {
             style={StyleSheet.absoluteFill}
           />
           <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#12271d2b" }]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: "#12271d70" }]}
           />
           <View style={s.heroCopy}>
             <Text style={[ui.eyebrow, { color: "#fff", fontSize: 8 }]}>
@@ -106,7 +106,7 @@ export default function Home() {
           }}
         >
           {products
-            .filter((p) => [0, 2, 4, 5].includes(p.id))
+            .filter((p) => [100, 101, 102, 103, 104].includes(p.id))
             .map((p) => (
               <ProductCard key={p.id} product={p} width={175} />
             ))}
@@ -118,7 +118,7 @@ export default function Home() {
             contentFit="cover"
           />
           <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#18291d40" }]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: "#12271d70" }]}
           />
           <View style={s.campaignCopy}>
             <Text style={[ui.eyebrow, { color: C.white, fontSize: 8 }]}>

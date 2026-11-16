@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { type Product } from "../data/catalog";
 import { productImage } from "../data/images";
 import { useStore } from "../store/store";
-import { demoStock } from "../data/customer";
+import { isAvailable } from "../data/customer";
 import { C } from "./theme";
 export default function ProductCard({
   product: p,
@@ -33,9 +33,9 @@ export default function ProductCard({
           />
         </Pressable>
         <Text style={s.badge}>
-          {!demoStock(p.id)
+          {!isAvailable(p.id)
             ? "OUT OF STOCK"
-            : p.id === 0
+            : p.id === 100
               ? "BEST SELLER"
               : "NEW ARRIVAL"}
         </Text>
@@ -73,14 +73,7 @@ export default function ProductCard({
           style={[
             s.swatch,
             {
-              backgroundColor:
-                p.color === "Pink Taffy"
-                  ? "#d5a2b5"
-                  : p.color === "Silt"
-                    ? "#a29a88"
-                    : p.color.includes("Grey")
-                      ? "#c0c2bb"
-                      : "#453940",
+              backgroundColor: p.swatch,
             },
           ]}
         />

@@ -35,7 +35,7 @@ export default function Addresses() {
       defaultAddressId: old.defaultAddressId || next.id,
     }));
     setForm(null);
-    setMessage("Address saved on this device.");
+    setMessage("Address saved.");
   }
   return (
     <Page
@@ -43,10 +43,6 @@ export default function Addresses() {
       intro="Save a home for your next favorites."
       testID="addresses-screen"
     >
-      <Notice>
-        Addresses are stored locally when you tap Save address. No delivery or
-        online account is created.
-      </Notice>
       {!!message && (
         <Text accessibilityRole="alert" style={a.success}>
           {message}
@@ -75,7 +71,7 @@ export default function Addresses() {
               <MapPin size={27} color={C.ink} />
               <Text style={ui.h2}>A place to start.</Text>
               <Text style={ui.body}>
-                Add an address to make your next demo checkout a little easier.
+                Add an address to make your next checkout a little easier.
               </Text>
             </View>
           )}

@@ -41,21 +41,3 @@ export function checkoutTotals(
     threshold,
   };
 }
-
-export type DemoReceipt = {
-  id: string;
-  createdAt: string;
-  items: {
-    id: number;
-    name: string;
-    color: string;
-    size: string;
-    quantity: number;
-    price: number;
-  }[];
-  totals: ReturnType<typeof checkoutTotals>;
-  shippingMethod: ShippingMethod;
-  country: string;
-};
-
-export const RECEIPT_KEY = "aven-demo-receipt";

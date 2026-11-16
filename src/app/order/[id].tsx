@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
+import { router, useLocalSearchParams } from "expo-router";
 import { Check, Package } from "lucide-react-native";
-import { Page, Notice, Choice, Field, Row, a } from "../../ui/account";
+import { Page, Row, Choice, Field, a } from "../../ui/account";
 import { Button } from "../../ui/components";
 import { useStore } from "../../store/store";
 import { useCustomer } from "../../store/customer";
-import { exampleOrders } from "../../data/orders";
 import { products, sizesFor } from "../../data/catalog";
 import { productImage } from "../../data/images";
 import { money } from "../../data/totals";
@@ -16,82 +15,63 @@ export default function Order() {
   const { id } = useLocalSearchParams<{ id: string }>(),
     store = useStore(),
     { data, update } = useCustomer(),
-    [action, setAction] = useState(""),
+    o = store.orders.find((o) => o.id === id);
+  const [action, setAction] = useState(""),
     [reason, setReason] = useState(""),
-    [replacementSize, setReplacementSize] = useState(""),
+    [size, setSize] = useState(""),
     [message, setMessage] = useState("");
-  const example = exampleOrders.find((o) => o.id === id),
-    o = store.orders.find((o) => o.id === id) || example;
   if (!o)
     return (
       <Page title="This order wandered off.">
-        <Notice>
-          Only orders saved on this device and the sample journeys are
-          available.
-        </Notice>
         <Button onPress={() => router.replace("/account/orders")}>
           Back to My orders
         </Button>
       </Page>
     );
-  const status =
-      data.orderActions[id]?.status || example?.status || "Processing",
-    stage = status === "Delivered" ? 3 : status === "In transit" ? 2 : 0;
+  const status = data.orderActions[id]?.status || "Awaiting confirmation";
   return (
-    <Page title="A little closer." intro={o.id} testID="order-screen">
-      <Notice>
-        {example ? "Fictional sample journey." : "Local demo purchase."} No
-        payment, carrier booking, return or refund is processed.
-      </Notice>
+    <Page title="Your everyday arrivals." intro={o.id} testID="order-screen">
       <View style={a.card}>
-        <Package color={C.ink} size={25} />
+        <Package color={C.ink} size={26} />
         <Text style={ui.h2}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Text>
         <Text style={ui.body}>
-          {status === "Processing"
-            ? "Your demo purchase is saved. This preview does not progress automatically."
-            : status === "In transit"
-              ? "Sample delivery estimate: 2–3 business days."
-              : status === "Delivered"
-                ? "This example has arrived. Preview a return or exchange below."
-                : "Your demo request has been saved locally. No request was sent."}
+          {data.orderActions[id]
+            ? "Your request details are saved."
+            : "Find your items, delivery choice and payment details below."}
         </Text>
       </View>
-      {!data.orderActions[id] && (
-        <View style={{ gap: 18 }}>
-          {["Order placed", "Packed with care", "On its way", "Delivered"].map(
-            (label, i) => (
+      <View style={{ gap: 18 }}>
+        {["Order saved", "Confirmed", "On its way", "Delivered"].map(
+          (label, i) => (
+            <View
+              key={label}
+              style={{ flexDirection: "row", alignItems: "center", gap: 13 }}
+            >
               <View
-                key={label}
-                style={{ flexDirection: "row", alignItems: "center", gap: 13 }}
+                style={{
+                  height: 27,
+                  width: 27,
+                  borderRadius: 14,
+                  backgroundColor: i === 0 ? C.ink : C.cream,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <View
-                  style={{
-                    height: 28,
-                    width: 28,
-                    borderRadius: 14,
-                    backgroundColor: i <= stage ? C.ink : C.cream,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {i <= stage ? (
-                    <Check size={15} color={C.white} />
-                  ) : (
-                    <Text style={ui.small}>{i + 1}</Text>
-                  )}
-                </View>
-                <Text
-                  style={{ color: i <= stage ? C.ink : C.muted, fontSize: 13 }}
-                >
-                  {label}
-                </Text>
+                {i === 0 ? (
+                  <Check size={14} color={C.white} />
+                ) : (
+                  <Text style={ui.small}>{i + 1}</Text>
+                )}
               </View>
-            ),
-          )}
-        </View>
-      )}
+              <Text style={{ fontSize: 13, color: i === 0 ? C.ink : C.muted }}>
+                {label}
+              </Text>
+            </View>
+          ),
+        )}
+      </View>
       {o.items.map((i) => {
         const p = products.find((p) => p.id === i.id)!;
         return (
@@ -100,13 +80,13 @@ export default function Order() {
             accessibilityLabel={`View ${p.name}`}
             key={`${i.id}-${i.size}`}
             onPress={() =>
-              router.push({ pathname: "/product/[id]", params: { id: i.id } })
+              router.push({ pathname: "/product/[id]", params: { id: p.id } })
             }
-            style={[a.row, { alignItems: "flex-start" }]}
+            style={a.row}
           >
             <Image
-              source={productImage(i.id)}
-              style={{ width: 65, height: 85 }}
+              source={productImage(p.id)}
+              style={{ width: 65, height: 83 }}
               contentFit="cover"
             />
             <View style={{ flex: 1, gap: 7 }}>
@@ -122,9 +102,8 @@ export default function Order() {
       <View style={a.card}>
         {[
           ["Subtotal", o.totals.subtotal],
-          ["Discount", o.totals.discount ? -o.totals.discount : 0],
           ["Shipping", o.totals.shipping],
-          ["Tax (demo)", o.totals.tax],
+          ["Discount", o.totals.discount ? -o.totals.discount : 0],
           ["Total", o.totals.total],
         ].map(([label, value]) => (
           <View key={label} style={ui.row}>
@@ -136,40 +115,27 @@ export default function Order() {
       <Text style={ui.body}>
         {o.shipping === "express" ? "Express" : "Standard"} shipping ·{" "}
         {o.country}
-        {"\n"}Demo Visa ending in 4242 · No charge
+        {"\n"}Pay on delivery
       </Text>
       {!data.orderActions[id] && (
         <View style={a.wrap}>
-          {status === "Processing" && (
+          {[
+            ["cancelled", "Cancel order"],
+            ["return requested", "Request return"],
+            ["exchange requested", "Request exchange"],
+          ].map(([value, label]) => (
             <Choice
-              label="Cancel demo order"
-              selected={action === "cancelled"}
-              onPress={() => setAction("cancelled")}
+              key={value}
+              label={label}
+              selected={action === value}
+              onPress={() => setAction(value)}
             />
-          )}
-          {status === "Delivered" && (
-            <>
-              <Choice
-                label="Request return"
-                selected={action === "return requested"}
-                onPress={() => setAction("return requested")}
-              />
-              <Choice
-                label="Request exchange"
-                selected={action === "exchange requested"}
-                onPress={() => setAction("exchange requested")}
-              />
-            </>
-          )}
+          ))}
         </View>
       )}
       {!!action && !data.orderActions[id] && (
         <View style={a.card}>
-          <Text style={a.label}>
-            {action === "cancelled"
-              ? "Cancel this demo order?"
-              : "Return / exchange preview"}
-          </Text>
+          <Text style={a.label}>How can we help?</Text>
           <Field
             label="Reason for your request"
             value={reason}
@@ -177,30 +143,30 @@ export default function Order() {
             multiline
           />
           {action === "exchange requested" && (
-            <View style={{ gap: 10 }}>
+            <>
               <Text style={ui.label}>Replacement size</Text>
               <View style={a.wrap}>
                 {sizesFor(products.find((p) => p.id === o.items[0].id)!).map(
-                  (size) => (
+                  (x) => (
                     <Choice
-                      key={size}
-                      label={size}
-                      selected={replacementSize === size}
-                      onPress={() => setReplacementSize(size)}
+                      key={x}
+                      label={x}
+                      selected={size === x}
+                      onPress={() => setSize(x)}
                     />
                   ),
                 )}
               </View>
-            </View>
+            </>
           )}
           <Button
             onPress={() => {
-              if (action === "exchange requested" && !replacementSize) {
-                setMessage("Choose a replacement size.");
+              if (reason.trim().length < 5) {
+                setMessage("Please tell us a little more.");
                 return;
               }
-              if (reason.trim().length < 5) {
-                setMessage("Please enter at least 5 characters.");
+              if (action === "exchange requested" && !size) {
+                setMessage("Choose a replacement size.");
                 return;
               }
               update((old) => ({
@@ -212,17 +178,15 @@ export default function Order() {
                       "cancelled" | "return requested" | "exchange requested",
                     reason:
                       reason.trim() +
-                      (action === "exchange requested"
-                        ? ` · Replacement size: ${replacementSize}`
-                        : ""),
+                      (size ? ` · Replacement size: ${size}` : ""),
                   },
                 },
               }));
               setAction("");
-              setMessage("Saved locally. No request or refund was sent.");
+              setMessage("Your request details are saved.");
             }}
           >
-            Confirm local request
+            Save request
           </Button>
           <Pressable accessibilityRole="button" onPress={() => setAction("")}>
             <Text style={a.link}>Keep order unchanged</Text>
@@ -235,25 +199,7 @@ export default function Order() {
         </Text>
       )}
       {data.orderActions[id] && (
-        <Notice>Reason: {data.orderActions[id].reason}</Notice>
-      )}
-      {!!example && data.orderActions[id] && (
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => {
-            update((old) => {
-              const next = { ...old.orderActions };
-              delete next[id];
-              return { ...old, orderActions: next };
-            });
-            setMessage("");
-            setAction("");
-            setReason("");
-            setReplacementSize("");
-          }}
-        >
-          <Text style={a.link}>Reset sample journey</Text>
-        </Pressable>
+        <Text style={ui.body}>{data.orderActions[id].reason}</Text>
       )}
       <Button
         onPress={() => {
@@ -265,7 +211,7 @@ export default function Order() {
       </Button>
       <Row
         title="Need a hand?"
-        subtitle="Open support"
+        subtitle="Visit help & support"
         onPress={() => router.push("/account/support")}
       />
     </Page>

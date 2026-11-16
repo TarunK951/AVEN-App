@@ -15,10 +15,6 @@ export default function Profile() {
       intro="Your details, ready for your next visit."
       testID="profile-screen"
     >
-      <Notice>
-        Saved only on this device. Use sample details for this preview; no
-        account or verification email is created.
-      </Notice>
       {(
         [
           ["firstName", "First name"],
@@ -61,7 +57,7 @@ export default function Profile() {
       </Button>
       {saved && (
         <Text accessibilityRole="alert" style={a.success}>
-          Your profile is saved on this device.
+          Your profile is saved.
         </Text>
       )}
     </Page>

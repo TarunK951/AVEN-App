@@ -51,7 +51,12 @@ export const ui = StyleSheet.create({
     justifyContent: "space-between",
     gap: 16,
   },
-  buttonText: { color: C.white, fontSize: 13, fontWeight: "500", flexShrink: 1 },
+  buttonText: {
+    color: C.white,
+    fontSize: 13,
+    fontWeight: "500",
+    flexShrink: 1,
+  },
   lightButton: { backgroundColor: C.white },
   lightButtonText: { color: C.ink },
   disabled: { opacity: 0.4 },

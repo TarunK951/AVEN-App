@@ -274,7 +274,7 @@ export default function Shop() {
               />
               <Toggle
                 label="In stock only"
-                description="Uses sample inventory, including the selected size."
+                description="Show available pieces in your selected size."
                 value={inStock}
                 onChange={setInStock}
               />

@@ -29,7 +29,9 @@ export default function Saved() {
                 Keep them close.
               </Text>
               <Text style={[ui.body, { marginTop: 12 }]}>
-                {data.length} saved {data.length === 1 ? "favorite" : "favorites"}, ready when you are.
+                {data.length} saved{" "}
+                {data.length === 1 ? "favorite" : "favorites"}, ready when you
+                are.
               </Text>
             </View>
           }

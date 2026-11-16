@@ -1,3 +1,5 @@
+import { products, isAvailable } from "./catalog";
+export { isAvailable };
 import {
   blankAddress,
   validateAddress,
@@ -91,7 +93,11 @@ export function hydrateCustomer(raw: unknown): CustomerData {
   const ids = (x: unknown) =>
     Array.isArray(x)
       ? [
-          ...new Set(x.filter((n) => Number.isInteger(n) && n >= 0 && n <= 10)),
+          ...new Set(
+            x.filter(
+              (n) => Number.isInteger(n) && products.some((p) => p.id === n),
+            ),
+          ),
         ].slice(0, 30)
       : [];
   return {
@@ -125,8 +131,7 @@ export function hydrateCustomer(raw: unknown): CustomerData {
               typeof r.text === "string" &&
               typeof r.name === "string" &&
               Number.isInteger(r.productId) &&
-              r.productId >= 0 &&
-              r.productId <= 10 &&
+              products.some((p) => p.id === r.productId) &&
               Number.isInteger(r.rating) &&
               r.rating >= 1 &&
               r.rating <= 5,
@@ -177,5 +182,3 @@ export function hydrateCustomer(raw: unknown): CustomerData {
     loyalty: v.loyalty === true,
   };
 }
-export const demoStock = (id: number, size?: string) =>
-  id !== 10 && !(id === 1 && size === "XL");

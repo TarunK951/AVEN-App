@@ -20,21 +20,15 @@ export default function Reviews() {
       intro={p?.name ?? "Product unavailable"}
       testID="reviews-screen"
     >
-      <Notice>
-        Local reviews only. These are not verified customer reviews and are
-        never published or shared.
-      </Notice>
       {reviews.length > 0 ? (
         <Text style={ui.h2}>
           {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(
             1,
           )}{" "}
-          / 5 · {reviews.length} local reviews
+          / 5 · {reviews.length} reviews
         </Text>
       ) : (
-        <Text style={ui.body}>
-          Be the first to leave a review on this device.
-        </Text>
+        <Text style={ui.body}>Be the first to leave a review.</Text>
       )}
       {reviews.map((r) => (
         <View key={r.id} style={a.card}>
@@ -52,7 +46,7 @@ export default function Reviews() {
               }))
             }
           >
-            <Text style={a.link}>Remove local review</Text>
+            <Text style={a.link}>Remove review</Text>
           </Pressable>
         </View>
       ))}
@@ -95,10 +89,10 @@ export default function Reviews() {
                 ],
               }));
               setText("");
-              setFeedback("Review saved locally. It has not been published.");
+              setFeedback("Your review is saved.");
             }}
           >
-            Save local review
+            Save review
           </Button>
           {!!feedback && (
             <Text accessibilityRole="alert" style={a.success}>

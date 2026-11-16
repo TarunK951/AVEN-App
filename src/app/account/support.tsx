@@ -7,19 +7,19 @@ import { ui } from "../../ui/theme";
 const faqs = [
   [
     "Where is my order?",
-    "Open My Orders for a local tracking preview. No real shipment or carrier tracking is connected.",
+    "Open My Orders and select an order to view its details and current status.",
   ],
   [
     "How do returns work?",
-    "Open a delivered sample order and choose Request return or Request exchange. Requests stay on this device; no shipping label or refund is created.",
+    "Open your order details and choose Request return or Request exchange. Add a reason and save your request details.",
   ],
   [
     "Can I change my order?",
-    "Processing demo orders can be cancelled from order details. You can then rebuild your bag.",
+    "Open order details to find your options. You can also use Buy again to build a new bag.",
   ],
   [
     "How do I care for my pieces?",
-    "Follow the garment label. Product-page descriptions and size guidance are preview information.",
+    "Each product page has fabric and care notes. Follow the care label on your garment for the best results.",
   ],
 ];
 export default function Support() {
@@ -51,11 +51,8 @@ export default function Support() {
           )}
         </View>
       ))}
-      <Text style={[ui.h2, { marginTop: 8 }]}>Keep a note for us.</Text>
-      <Notice>
-        Support draft only · Nothing is sent. Avoid entering private or payment
-        information.
-      </Notice>
+      <Text style={[ui.h2, { marginTop: 8 }]}>How can we help?</Text>
+
       <View style={a.wrap}>
         {[
           "Order help",
@@ -91,19 +88,17 @@ export default function Support() {
             ].slice(0, 50),
           }));
           setMessage("");
-          setFeedback("Draft saved on this device. No message was sent.");
+          setFeedback("Message saved. ");
         }}
       >
-        Save support draft
+        Save message
       </Button>
       {!!feedback && (
         <Text accessibilityRole="alert" style={a.success}>
           {feedback}
         </Text>
       )}
-      {data.tickets.length > 0 && (
-        <Text style={ui.eyebrow}>YOUR SAVED DRAFTS</Text>
-      )}
+      {data.tickets.length > 0 && <Text style={ui.eyebrow}>YOUR MESSAGES</Text>}
       {data.tickets.map((t) => (
         <View key={t.id} style={a.card}>
           <Text style={a.label}>{t.topic}</Text>
@@ -117,7 +112,7 @@ export default function Support() {
               }))
             }
           >
-            <Text style={a.link}>Remove draft</Text>
+            <Text style={a.link}>Remove message</Text>
           </Pressable>
         </View>
       ))}

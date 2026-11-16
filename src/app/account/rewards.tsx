@@ -29,26 +29,22 @@ export default function Rewards() {
             : "Make room for good things."}
         </Text>
         <Text style={{ fontSize: 44, color: C.ink }}>{points}</Text>
-        <Text style={ui.small}>PREVIEW POINTS · NO CASH VALUE</Text>
+        <Text style={ui.small}>CIRCLE POINTS</Text>
       </View>
-      <Notice>
-        Local loyalty concept only. Joining does not register you, subscribe you
-        to messages, or create redeemable rewards.
-      </Notice>
+
       {!data.loyalty && (
         <Button onPress={() => update((old) => ({ ...old, loyalty: true }))}>
-          Join the preview Circle
+          Join the AVEN Circle
         </Button>
       )}
       <Text style={ui.body}>
-        A point for every demo dollar before discounts. Your local order history
-        powers this preview balance.
+        A point for every dollar before discounts. Your order history powers
+        this balance.
       </Text>
       <View style={a.card}>
         <Text style={a.label}>A little welcome gift</Text>
         <Text style={ui.body}>
-          Try AVEN10 at demo checkout for 10% off. This is a preview discount,
-          available with or without Circle membership.
+          Use AVEN10 at checkout for 10% off your next everyday favorite.
         </Text>
       </View>
       <Button onPress={() => router.navigate("/(tabs)/shop")}>
@@ -59,7 +55,7 @@ export default function Rewards() {
           accessibilityRole="button"
           onPress={() => update((old) => ({ ...old, loyalty: false }))}
         >
-          <Text style={a.link}>Leave the preview Circle</Text>
+          <Text style={a.link}>Leave the AVEN Circle</Text>
         </Pressable>
       )}
     </Page>

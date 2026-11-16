@@ -24,14 +24,10 @@ export default function Account() {
             : "Make it yours"}
         </Text>
         <Text style={ui.small}>
-          {data.profile.email ||
-            "Create a local profile to personalize your AVEN preview."}
+          {data.profile.email || "Your details, ready for your next visit."}
         </Text>
       </View>
-      <Notice>
-        Local profile · No sign-in or online account. Details stay on this
-        device.
-      </Notice>
+
       <View>
         <Row
           title="Edit profile"
@@ -45,17 +41,17 @@ export default function Account() {
         />
         <Row
           title="My orders"
-          subtitle="Demo purchases, tracking and returns"
+          subtitle="Purchases, tracking and returns"
           onPress={() => router.push("/account/orders")}
         />
         <Row
           title="Preferences & alerts"
-          subtitle="Delivery region and local notification preferences"
+          subtitle="Delivery region and notification preferences"
           onPress={() => router.push("/account/preferences")}
         />
         <Row
           title="Activity"
-          subtitle="Local order updates and stock alerts"
+          subtitle="Order updates and stock alerts"
           onPress={() => router.push("/account/activity")}
         />
         <Row
@@ -70,7 +66,7 @@ export default function Account() {
         />
         <Row
           title="Help & support"
-          subtitle="FAQs and local support drafts"
+          subtitle="FAQs and  messages"
           onPress={() => router.push("/account/support")}
         />
       </View>

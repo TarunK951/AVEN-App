@@ -63,7 +63,10 @@ export function Header({
 }) {
   const { count } = useStore();
   return (
-    <SafeAreaView edges={["top"]} style={{ backgroundColor: C.white, flexShrink: 0 }}>
+    <SafeAreaView
+      edges={["top"]}
+      style={{ backgroundColor: C.white, flexShrink: 0 }}
+    >
       <View style={s.header}>
         <View style={{ width: 42 }}>
           {back ? (
@@ -84,7 +87,17 @@ export function Header({
           ) : null}
         </View>
         {title ? (
-          <Text numberOfLines={1} style={{ fontSize: 16, color: C.ink, flexShrink: 1, textAlign: "center" }}>{title}</Text>
+          <Text
+            numberOfLines={1}
+            style={{
+              fontSize: 16,
+              color: C.ink,
+              flexShrink: 1,
+              textAlign: "center",
+            }}
+          >
+            {title}
+          </Text>
         ) : (
           <Pressable
             accessibilityRole="button"
@@ -191,7 +204,16 @@ const s = StyleSheet.create({
     borderColor: "#f0f2eb",
   },
   searchWrap: { paddingHorizontal: 20, paddingBottom: 14, paddingTop: 10 },
-  searchBar: { minHeight: 46, backgroundColor: C.cream, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: C.line },
+  searchBar: {
+    minHeight: 46,
+    backgroundColor: C.cream,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderColor: C.line,
+  },
   searchText: { fontSize: 12, color: C.muted, flexShrink: 1 },
   count: {
     position: "absolute",

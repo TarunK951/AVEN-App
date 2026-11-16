@@ -1,26 +1,6 @@
 import { products, sizesFor } from "./catalog";
 import { type Receipt } from "../store/store";
 import { checkoutTotals } from "./totals";
-export const exampleOrders: (Receipt & { status: string })[] = [
-  {
-    id: "AVN-SAMPLE-DELIVERED",
-    items: [{ id: 0, size: "M", quantity: 1 }],
-    totals: checkoutTotals(12800, "standard", "United States", false),
-    country: "United States",
-    shipping: "standard",
-    createdAt: "2026-11-01T12:00:00Z",
-    status: "Delivered",
-  },
-  {
-    id: "AVN-SAMPLE-TRANSIT",
-    items: [{ id: 8, size: "One Size", quantity: 1 }],
-    totals: checkoutTotals(9800, "express", "United States", false),
-    country: "United States",
-    shipping: "express",
-    createdAt: "2026-11-14T12:00:00Z",
-    status: "In transit",
-  },
-];
 export function isReceipt(value: unknown): value is Receipt {
   if (!value || typeof value !== "object") return false;
   const o = value as Receipt;
